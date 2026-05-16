@@ -2,10 +2,10 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="國考讀書規劃 - 周進度確認表，協助你規劃每週讀書日程，追蹤學習進度">
-    <title>📚 周進度確認表 - 國考讀書規劃</title>
-    <!-- PWA: Hide address bar on iOS & Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="國考讀書規劃 - 週次與科目進度管理">
+    <title>讀書規劃</title>
+    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#c4956a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,224 +13,130 @@
     <meta name="apple-mobile-web-app-title" content="讀書規劃">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Floating particles background -->
-    <div class="particles" id="particles"></div>
-
-    <div class="app-container">
+    <div class="app-shell">
         <!-- Header -->
-        <header class="app-header">
-            <div class="header-deco-left">
-                <span class="deco-icon">🌿</span>
-                <span class="deco-icon">📖</span>
-            </div>
-            <div class="header-content">
-                <h1 class="app-title">
-                    <span class="title-star">✨</span>
-                    周進度確認表
-                    <span class="title-star">✨</span>
-                </h1>
-                <p class="app-subtitle">每天一點點，進步看得見！加油，你一定可以！ ❤️</p>
-            </div>
-            <div class="header-deco-right">
-                <span class="deco-icon">📚</span>
-                <span class="deco-icon">🌱</span>
+        <header class="app-bar">
+            <h1 id="pageTitle">總覽</h1>
+            <div class="app-bar-status" id="headerStatus">
+                <span id="currentWeekPill">W01</span>
             </div>
         </header>
+        <!-- Content -->
+        <main class="app-content">
+            <!-- Tab 1 – Weekly Overview -->
+            <section id="tab-home" class="tab-page active">
+                <div class="week-nav">
+                    <button class="week-nav-btn" id="prevWeekBtn">◀</button>
+                    <span class="week-nav-label" id="weekNavLabel">W01 (05/04～05/10)</span>
+                    <button class="week-nav-btn" id="nextWeekBtn">▶</button>
+                </div>
+                <div class="subject-overview-grid" id="weeklySubjectCards">
+                    <!-- Subject cards will be injected by JS -->
+                </div>
+                <div class="overall-progress-bar">
+                    <div class="progress-bar-container"><div class="progress-bar" id="overallProgressBar"></div></div>
+                    <span id="overallProgressText">0%</span>
+                </div>
+            </section>
 
-        <!-- Progress Overview -->
-        <section class="progress-overview" id="progressOverview">
-            <div class="progress-card">
-                <div class="progress-ring" id="overallRing">
-                    <svg viewBox="0 0 100 100">
-                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-                        <circle class="ring-fill" cx="50" cy="50" r="42" id="overallRingFill"/>
-                    </svg>
-                    <span class="ring-text" id="overallPercent">0%</span>
+            <!-- Tab 2 – Subject Page (list / detail) -->
+            <section id="tab-schedule" class="tab-page">
+                <div id="subjectListContainer" class="subject-list">
+                    <!-- Subject list cards injected by JS -->
                 </div>
-                <div class="progress-label">整體進度</div>
-            </div>
-            <div class="progress-card">
-                <div class="progress-ring" id="financeRing">
-                    <svg viewBox="0 0 100 100">
-                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-                        <circle class="ring-fill ring-finance" cx="50" cy="50" r="42" id="financeRingFill"/>
-                    </svg>
-                    <span class="ring-text" id="financePercent">0%</span>
-                </div>
-                <div class="progress-label">財政學</div>
-            </div>
-            <div class="progress-card">
-                <div class="progress-ring" id="taxRing">
-                    <svg viewBox="0 0 100 100">
-                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-                        <circle class="ring-fill ring-tax" cx="50" cy="50" r="42" id="taxRingFill"/>
-                    </svg>
-                    <span class="ring-text" id="taxPercent">0%</span>
-                </div>
-                <div class="progress-label">稅務法規</div>
-            </div>
-            <div class="progress-card">
-                <div class="progress-ring" id="civicsRing">
-                    <svg viewBox="0 0 100 100">
-                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-                        <circle class="ring-fill ring-civics" cx="50" cy="50" r="42" id="civicsRingFill"/>
-                    </svg>
-                    <span class="ring-text" id="civicsPercent">0%</span>
-                </div>
-                <div class="progress-label">公民</div>
-            </div>
-            <div class="progress-card">
-                <div class="progress-ring" id="chineseRing">
-                    <svg viewBox="0 0 100 100">
-                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-                        <circle class="ring-fill ring-chinese" cx="50" cy="50" r="42" id="chineseRingFill"/>
-                    </svg>
-                    <span class="ring-text" id="chinesePercent">0%</span>
-                </div>
-                <div class="progress-label">國文</div>
-            </div>
-        </section>
-
-        <!-- Current Week Highlight -->
-        <section class="current-week-banner" id="currentWeekBanner">
-            <span class="cw-icon">📅</span>
-            <span class="cw-text" id="currentWeekText">載入中...</span>
-            <span class="cw-icon">🎯</span>
-        </section>
-
-        <!-- Main Schedule Table -->
-        <section class="schedule-section">
-            <div class="table-wrapper">
-                <table class="schedule-table" id="scheduleTable">
-                    <thead>
-                        <tr>
-                            <th class="th-week">週次</th>
-                            <th class="th-date">日期</th>
-                            <th class="th-finance">財政學（15章）</th>
-                            <th class="th-tax">稅務法規（13章）</th>
-                            <th class="th-civics">公民（35單元）</th>
-                            <th class="th-chinese">國文</th>
-                            <th class="th-status">完成</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scheduleBody">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Weekly Reflection Cards -->
-        <section class="reflection-section">
-            <h2 class="section-title">
-                <span>📝</span> 本週紀錄 <span>📝</span>
-            </h2>
-            <div class="reflection-cards">
-                <div class="reflection-card card-goal">
-                    <div class="card-header">
-                        <span class="card-icon">🎯</span>
-                        <h3>本週目標</h3>
+                <div id="subjectDetailContainer" class="subject-detail hidden">
+                    <button class="back-btn" id="backToSubjectsBtn">← 返回科目列表</button>
+                    <h2 class="subject-detail-title" id="subjectDetailTitle">科目</h2>
+                    <div class="subject-detail-progress">
+                        <div class="progress-bar-container"><div class="progress-bar" id="subjectDetailBar"></div></div>
+                        <span id="subjectDetailText">0%</span>
                     </div>
-                    <textarea id="weeklyGoal" placeholder="寫下這週想要達成的目標..."></textarea>
-                </div>
-                <div class="reflection-card card-harvest">
-                    <div class="card-header">
-                        <span class="card-icon">🌱</span>
-                        <h3>本週收穫</h3>
+                    <div class="subject-week-list" id="subjectWeekList">
+                        <!-- Week rows for the subject -->
                     </div>
-                    <textarea id="weeklyHarvest" placeholder="記錄這週學到了什麼..."></textarea>
                 </div>
-                <div class="reflection-card card-self">
-                    <div class="card-header">
-                        <span class="card-icon">⭐</span>
-                        <h3>給自己的話</h3>
+            </section>
+
+            <!-- Tab 3 – Notes -->
+            <section id="tab-notes" class="tab-page">
+                <div class="week-picker-container">
+                    <div id="weekPickerScroll" class="week-picker-scroll"></div>
+                </div>
+                <div class="notes-container">
+                    <div class="note-box">
+                        <div class="note-label">🎯 本週目標</div>
+                        <textarea id="noteGoal" placeholder="點擊開始寫下目標..."></textarea>
                     </div>
-                    <textarea id="selfMessage" placeholder="給自己一些鼓勵的話..."></textarea>
+                    <div class="note-box">
+                        <div class="note-label">🌱 本週收穫</div>
+                        <textarea id="noteHarvest" placeholder="記錄這週學到了什麼..."></textarea>
+                    </div>
+                    <div class="note-box">
+                        <div class="note-label">⭐ 給自己的話</div>
+                        <textarea id="noteMessage" placeholder="給自己一些鼓勵..."></textarea>
+                    </div>
+                    <div class="auto-save-indicator" id="saveIndicator"><span class="save-icon">✓</span> 已自動儲存</div>
                 </div>
-            </div>
-            <div class="reflection-controls">
-                <label class="week-selector-label" for="reflectionWeekSelect">選擇週次：</label>
-                <select id="reflectionWeekSelect" class="week-selector"></select>
-                <button class="btn-save" id="btnSaveReflection" onclick="saveReflection()">
-                    <span>💾</span> 儲存紀錄
-                </button>
-            </div>
-        </section>
+            </section>
 
-        <!-- Settings Modal -->
-        <div class="modal-overlay" id="settingsModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>⚙️ 編輯課程設定</h2>
-                    <button class="modal-close" onclick="closeSettings()">✕</button>
+            <!-- Tab 4 – Settings -->
+            <section id="tab-settings" class="tab-page">
+                <div class="settings-group">
+                    <h3 class="settings-title">進度管理</h3>
+                    <div class="settings-list">
+                        <button class="settings-item" onclick="openAddWeek()"><span class="item-icon">➕</span><span class="item-text">新增一週排程</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item danger" onclick="confirmReset()"><span class="item-icon">🔄</span><span class="item-text">重置所有資料</span><span class="item-arrow">›</span></button>
+                    </div>
                 </div>
-                <div class="modal-body" id="settingsBody">
-                    <!-- Populated by JS -->
+                <div class="settings-group">
+                    <h3 class="settings-title">資料備份</h3>
+                    <div class="settings-list">
+                        <button class="settings-item" onclick="exportData()"><span class="item-icon">📤</span><span class="item-text">匯出備份 (JSON)</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item" onclick="importData()"><span class="item-icon">📥</span><span class="item-text">匯入資料</span><span class="item-arrow">›</span></button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-cancel" onclick="closeSettings()">取消</button>
-                    <button class="btn-confirm" onclick="saveSettings()">確認儲存</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Row Modal -->
-        <div class="modal-overlay" id="editRowModal">
-            <div class="modal-content modal-edit-row">
-                <div class="modal-header">
-                    <h2 id="editRowTitle">✏️ 編輯週次</h2>
-                    <button class="modal-close" onclick="closeEditRow()">✕</button>
-                </div>
-                <div class="modal-body" id="editRowBody">
-                    <!-- Populated by JS -->
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-cancel" onclick="closeEditRow()">取消</button>
-                    <button class="btn-confirm" onclick="saveEditRow()">確認儲存</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <button class="tool-btn" onclick="openSettings()" title="編輯設定">
-                <span>⚙️</span>
-            </button>
-            <button class="tool-btn" onclick="exportData()" title="匯出資料">
-                <span>📤</span>
-            </button>
-            <button class="tool-btn" onclick="importData()" title="匯入資料">
-                <span>📥</span>
-            </button>
-            <button class="tool-btn" onclick="resetData()" title="重置資料">
-                <span>🔄</span>
-            </button>
-        </div>
-        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <p>💪 堅持就是勝利！每一天的努力都在累積實力 💪</p>
-        </footer>
+                <div class="settings-info"><p>讀書規劃 v3.0 (Mobile App Style)</p><p>每一天的努力都在累積實力 💪</p></div>
+            </section>
+        </main>
+        <!-- Bottom Tab Bar -->
+        <nav class="tab-bar">
+            <button class="tab-item active" data-tab="home"><span class="tab-icon">🏠</span><span class="tab-label">總覽</span></button>
+            <button class="tab-item" data-tab="schedule"><span class="tab-icon">📋</span><span class="tab-label">科目</span></button>
+            <button class="tab-item" data-tab="notes"><span class="tab-icon">📝</span><span class="tab-label">筆記</span></button>
+            <button class="tab-item" data-tab="settings"><span class="tab-icon">⚙️</span><span class="tab-label">設定</span></button>
+        </nav>
     </div>
-
-    <!-- Toast Notification -->
+    <!-- Bottom Sheet (edit) -->
+    <div class="bottom-sheet-overlay" id="editSheetOverlay">
+        <div class="bottom-sheet" id="editSheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header"><h2 id="sheetTitle">編輯週次</h2><button class="sheet-close" id="closeSheet">完成</button></div>
+            <div class="sheet-content">
+                <div class="input-group"><label>日期範圍</label><input type="text" id="editDate" placeholder="MM/DD～MM/DD"></div>
+                <div class="input-group"><label>財政學</label><input type="text" id="editFinance"></div>
+                <div class="input-group"><label>稅務法規</label><textarea id="editTax" rows="3"></textarea></div>
+                <div class="input-group"><label>公民</label><input type="text" id="editCivics"></div>
+                <div class="input-group"><label>國文</label><input type="text" id="editChinese"></div>
+                <div class="sheet-actions"><button class="btn-delete" id="deleteWeekBtn">刪除此週</button></div>
+            </div>
+        </div>
+    </div>
+    <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
     <div class="toast" id="toast"></div>
-
     <script src="app.js"></script>
     <script>
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered:', reg.scope))
-                    .catch(err => console.log('SW registration failed:', err));
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
             });
         }
     </script>

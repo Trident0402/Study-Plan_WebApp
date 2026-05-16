@@ -1,4 +1,6 @@
-// ===== Schedule Data =====
+// 📱 讀書規劃 V3 – 完整 App Logic
+// ------------------------------------------------------------
+// Data (same schedule as before)
 const DEFAULT_SCHEDULE = [
     { week: "W01", date: "05/04～05/10", finance: "Ch2、Ch5", tax: "", civics: "", chinese: "第一章" },
     { week: "W02", date: "05/11～05/17", finance: "Ch6、Ch7", tax: "", civics: "", chinese: "第二章（壹）" },
@@ -19,28 +21,70 @@ const DEFAULT_SCHEDULE = [
     { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "第五章（玖、拾）、第六章" },
     { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 18 信託稅制", civics: "肆：5－6", chinese: "第六章" },
     { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "第七章（壹至柒）" },
-    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "第八章、第九章" },
+    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "第八章、第九章" }
 ];
 
-// ===== State Management =====
+// ------------------------------------------------------------
+// State (schedule, per‑subject completion, reflections)
 let scheduleData = [];
-let completionStatus = {};
+let completionStatus = {}; // { "W01": { finance:true, tax:false, civics:false, chinese:true }, ... }
 let reflections = {};
+let activeTab = 'home';
+let activeSubject = null; // when inside subject detail view
+let activeNoteWeek = '';
 let editingRowIndex = -1;
+let currentWeekIdx = -1;
 
+// ------------------------------------------------------------
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    initEventListeners();
+    // set current week index based on today
+    currentWeekIdx = getCurrentWeekIndex();
+    if (currentWeekIdx === -1) currentWeekIdx = 0; // fallback to first week
+    // initial render
+    renderAll();
+});
+
+// ------------------------------------------------------------
+// Load / Save (with backward compatibility)
 function loadState() {
     try {
-        const saved = localStorage.getItem('studyPlan_schedule');
-        scheduleData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-        
-        const savedCompletion = localStorage.getItem('studyPlan_completion');
-        completionStatus = savedCompletion ? JSON.parse(savedCompletion) : {};
-        
-        const savedReflections = localStorage.getItem('studyPlan_reflections');
-        reflections = savedReflections ? JSON.parse(savedReflections) : {};
+        const savedSchedule = localStorage.getItem('studyPlan_schedule');
+        scheduleData = savedSchedule ? JSON.parse(savedSchedule) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+        // Load completion – may be old format (boolean) or new object
+        const savedComp = localStorage.getItem('studyPlan_completion');
+        if (savedComp) {
+            const raw = JSON.parse(savedComp);
+            // Detect old format: any value is boolean
+            const isOld = Object.values(raw).some(v => typeof v === 'boolean');
+            if (isOld) {
+                // Convert to new per‑subject format (all true/false depending on old value)
+                completionStatus = {};
+                for (const wk of scheduleData) {
+                    const flag = raw[wk.week] === true;
+                    completionStatus[wk.week] = { finance: flag, tax: flag, civics: flag, chinese: flag };
+                }
+            } else {
+                completionStatus = raw;
+            }
+        } else {
+            // initialise empty per‑subject object
+            completionStatus = {};
+            for (const wk of scheduleData) {
+                completionStatus[wk.week] = { finance: false, tax: false, civics: false, chinese: false };
+            }
+        }
+        const savedRefs = localStorage.getItem('studyPlan_reflections');
+        reflections = savedRefs ? JSON.parse(savedRefs) : {};
     } catch (e) {
+        console.error('loadState error', e);
         scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
         completionStatus = {};
+        for (const wk of scheduleData) {
+            completionStatus[wk.week] = { finance: false, tax: false, civics: false, chinese: false };
+        }
         reflections = {};
     }
 }
@@ -51,333 +95,397 @@ function saveState() {
     localStorage.setItem('studyPlan_reflections', JSON.stringify(reflections));
 }
 
-// ===== Particles =====
-function createParticles() {
-    const container = document.getElementById('particles');
-    const icons = ['🌿', '📖', '✨', '🌱', '📚', '💫', '🍀', '⭐'];
-    for (let i = 0; i < 15; i++) {
-        const p = document.createElement('span');
-        p.className = 'particle';
-        p.textContent = icons[Math.floor(Math.random() * icons.length)];
-        p.style.left = Math.random() * 100 + '%';
-        p.style.animationDuration = (15 + Math.random() * 20) + 's';
-        p.style.animationDelay = Math.random() * 15 + 's';
-        p.style.fontSize = (0.8 + Math.random() * 0.8) + 'rem';
-        container.appendChild(p);
-    }
-}
-
-// ===== Current Week Detection =====
-function getCurrentWeekIndex() {
-    const now = new Date();
-    const year = now.getFullYear();
-    for (let i = 0; i < scheduleData.length; i++) {
-        const dateStr = scheduleData[i].date;
-        const match = dateStr.match(/(\d{2})\/(\d{2})～(\d{2})\/(\d{2})/);
-        if (!match) continue;
-        const startMonth = parseInt(match[1]) - 1;
-        const startDay = parseInt(match[2]);
-        const endMonth = parseInt(match[3]) - 1;
-        const endDay = parseInt(match[4]);
-        const start = new Date(year, startMonth, startDay);
-        const end = new Date(year, endMonth, endDay, 23, 59, 59);
-        if (now >= start && now <= end) return i;
-    }
-    return -1;
-}
-
-function updateCurrentWeekBanner() {
-    const idx = getCurrentWeekIndex();
-    const el = document.getElementById('currentWeekText');
-    if (idx >= 0) {
-        const w = scheduleData[idx];
-        el.textContent = `目前是 ${w.week}（${w.date}）— 加油！`;
-    } else {
-        el.textContent = '目前不在排程期間內，提前準備更好！';
-    }
-}
-
-// ===== Render Table =====
-function renderTable() {
-    const tbody = document.getElementById('scheduleBody');
-    tbody.innerHTML = '';
-    const currentIdx = getCurrentWeekIndex();
-
-    scheduleData.forEach((row, i) => {
-        const tr = document.createElement('tr');
-        const isCompleted = completionStatus[row.week] === true;
-        if (i === currentIdx) tr.classList.add('current-week-row');
-        if (isCompleted) tr.classList.add('completed-row');
-
-        tr.innerHTML = `
-            <td class="td-week">${row.week}</td>
-            <td class="td-date">${row.date}</td>
-            <td class="td-finance">${escapeHtml(row.finance || '')}<button class="edit-btn" onclick="openEditRow(${i}, event)" title="編輯">✏️</button></td>
-            <td class="td-tax">${escapeHtml(row.tax || '').replace(/\n/g, '<br>')}</td>
-            <td class="td-civics">${escapeHtml(row.civics || '')}</td>
-            <td class="td-chinese">${escapeHtml(row.chinese || '')}</td>
-            <td>
-                <div class="check-wrapper">
-                    <input type="checkbox" class="check-input" id="chk-${i}" 
-                        ${isCompleted ? 'checked' : ''} onchange="toggleCompletion(${i})">
-                    <label class="check-label" for="chk-${i}">✓</label>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
+// ------------------------------------------------------------
+// UI Event Listeners
+function initEventListeners() {
+    // Tab bar switching
+    document.querySelectorAll('.tab-item').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
+    // Weekly navigation buttons (home)
+    document.getElementById('prevWeekBtn').addEventListener('click', () => changeWeek(-1));
+    document.getElementById('nextWeekBtn').addEventListener('click', () => changeWeek(1));
+    // Bottom sheet controls
+    document.getElementById('editSheetOverlay').addEventListener('click', e => {
+        if (e.target.id === 'editSheetOverlay') closeBottomSheet();
+    });
+    document.getElementById('closeSheet').addEventListener('click', saveEditFromSheet);
+    document.getElementById('deleteWeekBtn').addEventListener('click', deleteCurrentWeek);
+    // Auto‑save for notes
+    ['noteGoal','noteHarvest','noteMessage'].forEach(id => {
+        document.getElementById(id).addEventListener('input', debounce(saveActiveNote, 800));
+    });
+    // Back button on subject detail
+    document.getElementById('backToSubjectsBtn').addEventListener('click', backToSubjectList);
 }
 
-function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// ------------------------------------------------------------
+// Core Rendering
+function renderAll() {
+    // Header week pill reflects current week
+    document.getElementById('currentWeekPill').textContent = scheduleData[currentWeekIdx].week;
+    // Update page title (depends on active tab)
+    const titles = { home: '總覽', schedule: '科目', notes: '筆記', settings: '設定' };
+    document.getElementById('pageTitle').textContent = titles[activeTab];
+    // Render each tab according to activeTab
+    if (activeTab === 'home') renderHome();
+    if (activeTab === 'schedule') renderSubjectList();
+    if (activeTab === 'notes') { renderNotePicker(); renderActiveNote(); }
+    // progress bars – always update
+    updateOverallProgress();
+    updateHeaderStatus();
 }
 
-// ===== Completion =====
-function toggleCompletion(index) {
-    const week = scheduleData[index].week;
-    completionStatus[week] = !completionStatus[week];
-    saveState();
-    renderTable();
-    updateProgress();
-    showToast(completionStatus[week] ? `${week} 完成！🎉` : `${week} 取消完成`);
-}
-
-// ===== Progress Rings =====
-function updateProgress() {
-    const total = scheduleData.length;
-    const completed = scheduleData.filter(r => completionStatus[r.week]).length;
-    setRing('overallRingFill', 'overallPercent', completed / total);
-
-    // Subject-specific: count rows with content
+// --------------------- Home (Weekly Overview) ---------------------
+function renderHome() {
+    const wk = scheduleData[currentWeekIdx];
+    // week label
+    document.getElementById('weekNavLabel').textContent = `${wk.week} (${wk.date})`;
+    // subject cards
+    const container = document.getElementById('weeklySubjectCards');
     const subjects = [
-        { key: 'finance', ringId: 'financeRingFill', textId: 'financePercent' },
-        { key: 'tax', ringId: 'taxRingFill', textId: 'taxPercent' },
-        { key: 'civics', ringId: 'civicsRingFill', textId: 'civicsPercent' },
-        { key: 'chinese', ringId: 'chineseRingFill', textId: 'chinesePercent' },
+        { key: 'finance', label: '財政學', value: wk.finance },
+        { key: 'tax', label: '稅務法規', value: wk.tax },
+        { key: 'civics', label: '公民', value: wk.civics },
+        { key: 'chinese', label: '國文', value: wk.chinese }
     ];
-    subjects.forEach(sub => {
-        const rows = scheduleData.filter(r => r[sub.key] && r[sub.key].trim());
-        const done = rows.filter(r => completionStatus[r.week]).length;
-        const ratio = rows.length > 0 ? done / rows.length : 0;
-        setRing(sub.ringId, sub.textId, ratio);
-    });
+    container.innerHTML = subjects.map(s => {
+        const checked = completionStatus[wk.week][s.key];
+        const displayVal = s.value && s.value.trim() ? escapeHtml(s.value).replace(/\n/g, ' ') : '(無安排)';
+        return `
+            <div class="subject-card" data-key="${s.key}">
+                <div class="subject-card-header">
+                    <span class="subject-card-title">${s.label}</span>
+                    <div class="subject-checkbox ${checked ? 'checked' : ''}" onclick="toggleSubject('${wk.week}','${s.key}')"></div>
+                </div>
+                <div class="subject-card-content">${displayVal}</div>
+            </div>
+        `;
+    }).join('');
+    // overall progress bar (percentage of all subject‑week combos completed)
+    // (computed in updateOverallProgress())
 }
 
-function setRing(ringId, textId, ratio) {
-    const circumference = 2 * Math.PI * 42; // ~264
-    const offset = circumference * (1 - ratio);
-    const el = document.getElementById(ringId);
-    const txt = document.getElementById(textId);
-    if (el) el.style.strokeDashoffset = offset;
-    if (txt) txt.textContent = Math.round(ratio * 100) + '%';
+function changeWeek(delta) {
+    const newIdx = currentWeekIdx + delta;
+    if (newIdx < 0 || newIdx >= scheduleData.length) return;
+    currentWeekIdx = newIdx;
+    renderAll();
 }
 
-// ===== Reflections =====
-function populateReflectionSelect() {
-    const sel = document.getElementById('reflectionWeekSelect');
-    sel.innerHTML = '';
-    const currentIdx = getCurrentWeekIndex();
-    scheduleData.forEach((row, i) => {
-        const opt = document.createElement('option');
-        opt.value = row.week;
-        opt.textContent = `${row.week}（${row.date}）`;
-        if (i === currentIdx) opt.selected = true;
-        sel.appendChild(opt);
-    });
-    sel.addEventListener('change', loadReflection);
-    loadReflection();
-}
-
-function loadReflection() {
-    const week = document.getElementById('reflectionWeekSelect').value;
-    const data = reflections[week] || {};
-    document.getElementById('weeklyGoal').value = data.goal || '';
-    document.getElementById('weeklyHarvest').value = data.harvest || '';
-    document.getElementById('selfMessage').value = data.message || '';
-}
-
-function saveReflection() {
-    const week = document.getElementById('reflectionWeekSelect').value;
-    reflections[week] = {
-        goal: document.getElementById('weeklyGoal').value,
-        harvest: document.getElementById('weeklyHarvest').value,
-        message: document.getElementById('selfMessage').value,
-    };
+function toggleSubject(week, subjectKey) {
+    const status = completionStatus[week][subjectKey];
+    completionStatus[week][subjectKey] = !status;
     saveState();
-    showToast(`${week} 的紀錄已儲存！✨`);
+    // if we are on home (weekly view) re‑render that week's cards
+    if (activeTab === 'home' && scheduleData[currentWeekIdx].week === week) renderHome();
+    // also refresh subject list progress
+    if (activeTab === 'schedule') renderSubjectList();
+    updateOverallProgress();
 }
 
-// ===== Edit Row =====
-function openEditRow(index, event) {
-    event.stopPropagation();
+// --------------------- Subject List (Main) ---------------------
+function renderSubjectList() {
+    // hide/show subject list vs detail
+    const listContainer = document.getElementById('subjectListContainer');
+    const detailContainer = document.getElementById('subjectDetailContainer');
+    if (activeSubject) {
+        listContainer.classList.add('hidden');
+        detailContainer.classList.remove('hidden');
+        renderSubjectDetail(activeSubject);
+        return;
+    }
+    listContainer.classList.remove('hidden');
+    detailContainer.classList.add('hidden');
+    const subjects = ['finance','tax','civics','chinese'];
+    const subjectNames = { finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文' };
+    const subjectColors = { finance:'var(--finance)', tax:'var(--tax)', civics:'var(--civics)', chinese:'var(--chinese)' };
+    listContainer.innerHTML = subjects.map(key => {
+        const total = scheduleData.filter(w=> w[key] && w[key].trim()).length;
+        const done = scheduleData.filter(w=> completionStatus[w.week][key]).length;
+        const ratio = total===0?0:done/total;
+        return `
+            <div class="subject-list-card" onclick="openSubjectDetail('${key}')">
+                <div class="subject-list-header">
+                    <span class="subject-list-title">${subjectNames[key]}</span>
+                    <span class="subject-list-count">${done}/${total}</span>
+                </div>
+                <div class="subject-list-progress"><div class="progress-bar" style="width:${ratio*100}%"></div></div>
+            </div>
+        `;
+    }).join('');
+}
+
+function openSubjectDetail(key) {
+    activeSubject = key;
+    renderAll();
+}
+
+function backToSubjectList() {
+    activeSubject = null;
+    renderAll();
+}
+
+function renderSubjectDetail(subjectKey) {
+    const subjectNames = { finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文' };
+    document.getElementById('subjectDetailTitle').textContent = subjectNames[subjectKey];
+    // progress bar for this subject
+    const total = scheduleData.filter(w=> w[subjectKey] && w[subjectKey].trim()).length;
+    const done = scheduleData.filter(w=> completionStatus[w.week][subjectKey]).length;
+    const ratio = total===0?0:done/total;
+    document.getElementById('subjectDetailBar').style.width = `${ratio*100}%`;
+    document.getElementById('subjectDetailText').textContent = `${Math.round(ratio*100)}%`;
+    // list of weeks that have this subject
+    const list = document.getElementById('subjectWeekList');
+    list.innerHTML = scheduleData.map((wk,i)=>{
+        if (!wk[subjectKey] || !wk[subjectKey].trim()) return '';
+        const checked = completionStatus[wk.week][subjectKey];
+        return `
+            <div class="week-item">
+                <div class="week-info">
+                    <span class="week-label">${wk.week}</span>
+                    <span class="week-date">${wk.date}</span>
+                    <div class="subject-card-content">${escapeHtml(wk[subjectKey]).replace(/\n/g, ' ')}</div>
+                </div>
+                <div class="subject-checkbox ${checked?'checked':''}" onclick="toggleSubject('${wk.week}','${subjectKey}')"></div>
+            </div>
+        `;
+    }).join('');
+}
+
+// --------------------- Overall Progress ---------------------
+function updateOverallProgress() {
+    // total subject‑week combos (only where the subject has content)
+    let total = 0, done = 0;
+    for (const wk of scheduleData) {
+        ['finance','tax','civics','chinese'].forEach(k=>{
+            if (wk[k] && wk[k].trim()) {
+                total++;
+                if (completionStatus[wk.week][k]) done++;
+            }
+        });
+    }
+    const ratio = total===0?0:done/total;
+    const bar = document.getElementById('overallProgressBar');
+    if (bar) bar.style.width = `${ratio*100}%`;
+    const txt = document.getElementById('overallProgressText');
+    if (txt) txt.textContent = `${Math.round(ratio*100)}%`;
+}
+
+function updateHeaderStatus() {
+    // show current week pill (already set in renderAll via currentWeekIdx)
+    // could also highlight if today is inside week – already handled on load
+}
+
+// ------------------------------------------------------------
+// Bottom Sheet (Edit week – unchanged from previous version)
+function openBottomSheet(index) {
     editingRowIndex = index;
     const row = scheduleData[index];
-    document.getElementById('editRowTitle').textContent = `✏️ 編輯 ${row.week}`;
-    document.getElementById('editRowBody').innerHTML = `
-        <div class="modal-field">
-            <label>日期</label>
-            <input id="editDate" value="${row.date}">
-        </div>
-        <div class="modal-field">
-            <label>財政學</label>
-            <input id="editFinance" value="${row.finance || ''}">
-        </div>
-        <div class="modal-field">
-            <label>稅務法規</label>
-            <textarea id="editTax" rows="3">${row.tax || ''}</textarea>
-        </div>
-        <div class="modal-field">
-            <label>公民</label>
-            <input id="editCivics" value="${row.civics || ''}">
-        </div>
-        <div class="modal-field">
-            <label>國文</label>
-            <input id="editChinese" value="${row.chinese || ''}">
-        </div>
-    `;
-    document.getElementById('editRowModal').classList.add('active');
+    document.getElementById('sheetTitle').textContent = `編輯 ${row.week}`;
+    document.getElementById('editDate').value = row.date;
+    document.getElementById('editFinance').value = row.finance;
+    document.getElementById('editTax').value = row.tax;
+    document.getElementById('editCivics').value = row.civics;
+    document.getElementById('editChinese').value = row.chinese;
+    document.getElementById('editSheetOverlay').classList.add('active');
 }
 
-function closeEditRow() {
-    document.getElementById('editRowModal').classList.remove('active');
+function closeBottomSheet() {
+    document.getElementById('editSheetOverlay').classList.remove('active');
     editingRowIndex = -1;
 }
 
-function saveEditRow() {
+function saveEditFromSheet() {
     if (editingRowIndex < 0) return;
-    scheduleData[editingRowIndex].date = document.getElementById('editDate').value;
-    scheduleData[editingRowIndex].finance = document.getElementById('editFinance').value;
-    scheduleData[editingRowIndex].tax = document.getElementById('editTax').value;
-    scheduleData[editingRowIndex].civics = document.getElementById('editCivics').value;
-    scheduleData[editingRowIndex].chinese = document.getElementById('editChinese').value;
+    const row = scheduleData[editingRowIndex];
+    row.date = document.getElementById('editDate').value;
+    row.finance = document.getElementById('editFinance').value;
+    row.tax = document.getElementById('editTax').value;
+    row.civics = document.getElementById('editCivics').value;
+    row.chinese = document.getElementById('editChinese').value;
     saveState();
-    renderTable();
-    closeEditRow();
-    showToast('已更新！📝');
+    renderAll();
+    closeBottomSheet();
+    showToast('已更新排程');
 }
 
-// ===== Settings =====
-function openSettings() {
-    const body = document.getElementById('settingsBody');
-    body.innerHTML = `
-        <p style="margin-bottom:16px;color:var(--color-text-light);font-size:0.88rem;">
-            你可以新增或刪除週次行。修改各週內容請直接在表格中點擊 ✏️ 編輯。
-        </p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn-confirm" onclick="addWeekRow()" style="font-size:0.85rem;">
-                ➕ 新增一週
-            </button>
-            <button class="btn-cancel" onclick="removeLastWeek()" style="font-size:0.85rem;color:#c44;">
-                ➖ 刪除最後一週
-            </button>
-        </div>
-        <div style="margin-top:16px;font-size:0.85rem;color:var(--color-text-light);">
-            目前共 <strong>${scheduleData.length}</strong> 週
-        </div>
-    `;
-    document.getElementById('settingsModal').classList.add('active');
-}
-
-function closeSettings() {
-    document.getElementById('settingsModal').classList.remove('active');
-}
-
-function saveSettings() {
-    closeSettings();
-}
-
-function addWeekRow() {
-    const nextNum = scheduleData.length + 1;
-    const weekLabel = 'W' + String(nextNum).padStart(2, '0');
-    scheduleData.push({ week: weekLabel, date: '', finance: '', tax: '', civics: '', chinese: '' });
+function deleteCurrentWeek() {
+    if (editingRowIndex < 0) return;
+    if (!confirm('確定要刪除這一週的排程嗎？')) return;
+    const wk = scheduleData[editingRowIndex].week;
+    scheduleData.splice(editingRowIndex,1);
+    delete completionStatus[wk];
+    delete reflections[wk];
+    // re‑index currentWeekIdx if needed
+    if (currentWeekIdx >= scheduleData.length) currentWeekIdx = scheduleData.length-1;
     saveState();
-    renderTable();
-    updateProgress();
-    populateReflectionSelect();
-    openSettings(); // refresh modal
-    showToast(`已新增 ${weekLabel}`);
+    renderAll();
+    closeBottomSheet();
+    showToast('已刪除週次');
 }
 
-function removeLastWeek() {
-    if (scheduleData.length <= 1) return;
-    const removed = scheduleData.pop();
-    delete completionStatus[removed.week];
-    delete reflections[removed.week];
+// ------------------------------------------------------------
+// Adding / Resetting / Import‑Export (same as previous version)
+function openAddWeek() {
+    const last = scheduleData[scheduleData.length-1];
+    const lastNum = last ? parseInt(last.week.replace('W','')) : 0;
+    const nextWeek = 'W' + String(lastNum+1).padStart(2,'0');
+    scheduleData.push({ week:nextWeek, date:'', finance:'', tax:'', civics:'', chinese:'' });
+    // init completion for the new week
+    completionStatus[nextWeek] = { finance:false, tax:false, civics:false, chinese:false };
     saveState();
-    renderTable();
-    updateProgress();
-    populateReflectionSelect();
-    openSettings();
-    showToast(`已刪除 ${removed.week}`);
+    renderAll();
+    showToast(`已新增 ${nextWeek}`);
+    // automatically switch to schedule tab so user can edit
+    switchTab('schedule');
 }
 
-// ===== Export / Import =====
+function confirmReset() {
+    if (confirm('確定要重置所有資料嗎？此操作無法復原。')) {
+        localStorage.clear();
+        loadState();
+        currentWeekIdx = getCurrentWeekIndex();
+        if (currentWeekIdx===-1) currentWeekIdx = 0;
+        renderAll();
+        showToast('資料已重置');
+    }
+}
+
 function exportData() {
     const data = { scheduleData, completionStatus, reflections };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `讀書規劃_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('已匯出資料！📤');
+    const a = document.createElement('a'); a.href=url; a.download=`讀書規劃備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
+    showToast('備份已產生');
 }
 
 function importData() {
     document.getElementById('importFileInput').click();
 }
 
-function handleImport(event) {
-    const file = event.target.files[0];
+function handleImport(e) {
+    const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = ev => {
         try {
-            const data = JSON.parse(e.target.result);
+            const data = JSON.parse(ev.target.result);
             if (data.scheduleData) scheduleData = data.scheduleData;
             if (data.completionStatus) completionStatus = data.completionStatus;
             if (data.reflections) reflections = data.reflections;
             saveState();
-            renderTable();
-            updateProgress();
-            populateReflectionSelect();
-            showToast('已匯入資料！📥');
-        } catch (err) {
-            showToast('匯入失敗，檔案格式不正確 ❌');
+            renderAll();
+            showToast('匯入成功');
+        } catch(err) {
+            console.error(err);
+            showToast('匯入失敗，格式錯�誤');
         }
     };
     reader.readAsText(file);
-    event.target.value = '';
 }
 
-function resetData() {
-    if (!confirm('確定要重置所有資料嗎？這會清除所有進度和紀錄。')) return;
-    scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-    completionStatus = {};
-    reflections = {};
+// ------------------------------------------------------------
+// Note Tab (unchanged – still per week)
+function renderNotePicker() {
+    const container = document.getElementById('weekPickerScroll');
+    container.innerHTML = scheduleData.map(w=>`<div class="week-pill ${activeNoteWeek===w.week?'active':''}" onclick="switchNoteWeek('${w.week}')">${w.week}</div>`).join('');
+    const act = container.querySelector('.active');
+    if (act) act.scrollIntoView({behavior:'smooth',inline:'center'});
+}
+
+function switchNoteWeek(week) {
+    activeNoteWeek = week;
+    renderNotePicker();
+    renderActiveNote();
+}
+
+function renderActiveNote() {
+    const data = reflections[activeNoteWeek]||{};
+    document.getElementById('noteGoal').value = data.goal||'';
+    document.getElementById('noteHarvest').value = data.harvest||'';
+    document.getElementById('noteMessage').value = data.message||'';
+}
+
+function saveActiveNote() {
+    reflections[activeNoteWeek] = {
+        goal: document.getElementById('noteGoal').value,
+        harvest: document.getElementById('noteHarvest').value,
+        message: document.getElementById('noteMessage').value
+    };
     saveState();
-    renderTable();
-    updateProgress();
-    populateReflectionSelect();
-    showToast('已重置為預設資料 🔄');
+    showAutoSaveIndicator();
 }
 
-// ===== Toast =====
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+function showAutoSaveIndicator(){
+    const el=document.getElementById('saveIndicator');
+    el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),1500);
 }
 
-// ===== Init =====
-document.addEventListener('DOMContentLoaded', () => {
-    loadState();
-    createParticles();
-    renderTable();
-    updateProgress();
-    updateCurrentWeekBanner();
-    populateReflectionSelect();
-});
+// ------------------------------------------------------------
+// Tab Switching helper
+function switchTab(tabId) {
+    activeTab = tabId;
+    // header title
+    const titles={home:'總覽',schedule:'科目',notes:'筆記',settings:'設定'};
+    document.getElementById('pageTitle').textContent = titles[tabId];
+    // activate page sections
+    document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active', p.id===`tab-${tabId}`));
+    // activate tab button style
+    document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
+    // when leaving subject detail, reset activeSubject
+    if (tabId !== 'schedule') activeSubject = null;
+    renderAll();
+}
+
+// ------------------------------------------------------------
+// Utility helpers
+function getCurrentWeekIndex(){
+    const now = new Date();
+    const year = now.getFullYear();
+    for(let i=0;i<scheduleData.length;i++){
+        const m = scheduleData[i].date.match(/(\d{2})\/(\d{2})～(\d{2})\/(\d{2})/);
+        if(!m) continue;
+        const start = new Date(year, parseInt(m[1])-1, parseInt(m[2]));
+        const end = new Date(year, parseInt(m[3])-1, parseInt(m[4]),23,59,59);
+        if(now>=start && now<=end) return i;
+    }
+    return -1;
+}
+
+function escapeHtml(str){
+    if(!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function debounce(fn, wait){
+    let t;
+    return function(){
+        const args = arguments, ctx=this;
+        clearTimeout(t);
+        t = setTimeout(()=>fn.apply(ctx,args), wait);
+    };
+}
+
+function showToast(msg){
+    const el=document.getElementById('toast');
+    el.textContent=msg;
+    el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ------------------------------------------------------------
+// Expose functions to global scope (for inline onclick handlers)
+window.toggleSubject = toggleSubject;
+window.openBottomSheet = openBottomSheet;
+window.openAddWeek = openAddWeek;
+window.confirmReset = confirmReset;
+window.exportData = exportData;
+window.importData = importData;
+window.handleImport = handleImport;
+window.switchTab = switchTab;
+window.switchNoteWeek = switchNoteWeek;
+window.openSubjectDetail = openSubjectDetail;
+window.backToSubjectList = backToSubjectList;
+// ------------------------------------------------------------

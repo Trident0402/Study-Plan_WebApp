@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="國考讀書規劃 - 周進度確認表，協助你規劃每週讀書日程，追蹤學習進度">
+    <title>📚 周進度確認表 - 國考讀書規劃</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-deco-left">
+                <span class="deco-icon">🌿</span>
+                <span class="deco-icon">📖</span>
+            </div>
+            <div class="header-content">
+                <h1 class="app-title">
+                    <span class="title-star">✨</span>
+                    周進度確認表
+                    <span class="title-star">✨</span>
+                </h1>
+                <p class="app-subtitle">每天一點點，進步看得見！加油，你一定可以！ ❤️</p>
+            </div>
+            <div class="header-deco-right">
+                <span class="deco-icon">📚</span>
+                <span class="deco-icon">🌱</span>
+            </div>
+        </header>
+
+        <!-- Progress Overview -->
+        <section class="progress-overview" id="progressOverview">
+            <div class="progress-card">
+                <div class="progress-ring" id="overallRing">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                        <circle class="ring-fill" cx="50" cy="50" r="42" id="overallRingFill"/>
+                    </svg>
+                    <span class="ring-text" id="overallPercent">0%</span>
+                </div>
+                <div class="progress-label">整體進度</div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-ring" id="financeRing">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                        <circle class="ring-fill ring-finance" cx="50" cy="50" r="42" id="financeRingFill"/>
+                    </svg>
+                    <span class="ring-text" id="financePercent">0%</span>
+                </div>
+                <div class="progress-label">財政學</div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-ring" id="taxRing">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                        <circle class="ring-fill ring-tax" cx="50" cy="50" r="42" id="taxRingFill"/>
+                    </svg>
+                    <span class="ring-text" id="taxPercent">0%</span>
+                </div>
+                <div class="progress-label">稅務法規</div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-ring" id="civicsRing">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                        <circle class="ring-fill ring-civics" cx="50" cy="50" r="42" id="civicsRingFill"/>
+                    </svg>
+                    <span class="ring-text" id="civicsPercent">0%</span>
+                </div>
+                <div class="progress-label">公民</div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-ring" id="chineseRing">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+                        <circle class="ring-fill ring-chinese" cx="50" cy="50" r="42" id="chineseRingFill"/>
+                    </svg>
+                    <span class="ring-text" id="chinesePercent">0%</span>
+                </div>
+                <div class="progress-label">國文</div>
+            </div>
+        </section>
+
+        <!-- Current Week Highlight -->
+        <section class="current-week-banner" id="currentWeekBanner">
+            <span class="cw-icon">📅</span>
+            <span class="cw-text" id="currentWeekText">載入中...</span>
+            <span class="cw-icon">🎯</span>
+        </section>
+
+        <!-- Main Schedule Table -->
+        <section class="schedule-section">
+            <div class="table-wrapper">
+                <table class="schedule-table" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th class="th-week">週次</th>
+                            <th class="th-date">日期</th>
+                            <th class="th-finance">財政學（15章）</th>
+                            <th class="th-tax">稅務法規（13章）</th>
+                            <th class="th-civics">公民（35單元）</th>
+                            <th class="th-chinese">國文</th>
+                            <th class="th-status">完成</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Weekly Reflection Cards -->
+        <section class="reflection-section">
+            <h2 class="section-title">
+                <span>📝</span> 本週紀錄 <span>📝</span>
+            </h2>
+            <div class="reflection-cards">
+                <div class="reflection-card card-goal">
+                    <div class="card-header">
+                        <span class="card-icon">🎯</span>
+                        <h3>本週目標</h3>
+                    </div>
+                    <textarea id="weeklyGoal" placeholder="寫下這週想要達成的目標..."></textarea>
+                </div>
+                <div class="reflection-card card-harvest">
+                    <div class="card-header">
+                        <span class="card-icon">🌱</span>
+                        <h3>本週收穫</h3>
+                    </div>
+                    <textarea id="weeklyHarvest" placeholder="記錄這週學到了什麼..."></textarea>
+                </div>
+                <div class="reflection-card card-self">
+                    <div class="card-header">
+                        <span class="card-icon">⭐</span>
+                        <h3>給自己的話</h3>
+                    </div>
+                    <textarea id="selfMessage" placeholder="給自己一些鼓勵的話..."></textarea>
+                </div>
+            </div>
+            <div class="reflection-controls">
+                <label class="week-selector-label" for="reflectionWeekSelect">選擇週次：</label>
+                <select id="reflectionWeekSelect" class="week-selector"></select>
+                <button class="btn-save" id="btnSaveReflection" onclick="saveReflection()">
+                    <span>💾</span> 儲存紀錄
+                </button>
+            </div>
+        </section>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ 編輯課程設定</h2>
+                    <button class="modal-close" onclick="closeSettings()">✕</button>
+                </div>
+                <div class="modal-body" id="settingsBody">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeSettings()">取消</button>
+                    <button class="btn-confirm" onclick="saveSettings()">確認儲存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Row Modal -->
+        <div class="modal-overlay" id="editRowModal">
+            <div class="modal-content modal-edit-row">
+                <div class="modal-header">
+                    <h2 id="editRowTitle">✏️ 編輯週次</h2>
+                    <button class="modal-close" onclick="closeEditRow()">✕</button>
+                </div>
+                <div class="modal-body" id="editRowBody">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeEditRow()">取消</button>
+                    <button class="btn-confirm" onclick="saveEditRow()">確認儲存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn" onclick="openSettings()" title="編輯設定">
+                <span>⚙️</span>
+            </button>
+            <button class="tool-btn" onclick="exportData()" title="匯出資料">
+                <span>📤</span>
+            </button>
+            <button class="tool-btn" onclick="importData()" title="匯入資料">
+                <span>📥</span>
+            </button>
+            <button class="tool-btn" onclick="resetData()" title="重置資料">
+                <span>🔄</span>
+            </button>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>💪 堅持就是勝利！每一天的努力都在累積實力 💪</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

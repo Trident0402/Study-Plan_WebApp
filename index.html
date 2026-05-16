@@ -30,36 +30,60 @@
         </header>
         <!-- Content -->
         <main class="app-content">
-            <!-- Tab 1 – Weekly Overview -->
+            <!-- Tab 1 – 總覽 (Progress Overview) -->
             <section id="tab-home" class="tab-page active">
-                <div class="week-nav">
-                    <button class="week-nav-btn" id="prevWeekBtn">◀</button>
-                    <span class="week-nav-label" id="weekNavLabel">W01 (05/04～05/10)</span>
-                    <button class="week-nav-btn" id="nextWeekBtn">▶</button>
-                </div>
-                <div class="subject-overview-grid" id="weeklySubjectCards">
-                    <!-- Subject cards will be injected by JS -->
-                </div>
+                <!-- 總體進度 -->
+                <div class="section-title" style="margin-top:4px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📊 總體進度</div>
                 <div class="overall-progress-bar">
                     <div class="progress-bar-container"><div class="progress-bar" id="overallProgressBar"></div></div>
                     <span id="overallProgressText">0%</span>
                 </div>
+                <!-- 各科進度 -->
+                <div class="section-title" style="margin-top:20px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📚 各科進度</div>
+                <div class="global-progress-grid" id="globalProgressGrid">
+                    <!-- 4 個科目全局進度條由 JS 動態注入 -->
+                </div>
+                <!-- 全部排程表 (直接呈現於總覽下方) -->
+                <div class="section-title" style="margin-top:24px; font-size:1rem; font-weight:700; color:var(--primary-dark);">📅 全部排程表</div>
+                <div class="full-schedule-container" id="fullScheduleContainer" style="margin-top: 12px; margin-bottom: 24px;"></div>
             </section>
 
-            <!-- Tab 2 – Subject Page (list / detail) -->
+
+            <!-- Tab 2 – 科目 (Schedule) with sub-tabs -->
             <section id="tab-schedule" class="tab-page">
-                <div id="subjectListContainer" class="subject-list">
-                    <!-- Subject list cards injected by JS -->
+                <!-- Sub-tab navigation -->
+                <div class="sub-tab-nav" id="scheduleSubTabNav">
+                    <button class="sub-tab-btn active" data-subtab="weekly" onclick="switchScheduleSubTab('weekly')">📅 週進度</button>
+                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchScheduleSubTab('subjects')">📚 各科目進度</button>
                 </div>
-                <div id="subjectDetailContainer" class="subject-detail hidden">
-                    <button class="back-btn" id="backToSubjectsBtn">← 返回科目列表</button>
-                    <h2 class="subject-detail-title" id="subjectDetailTitle">科目</h2>
-                    <div class="subject-detail-progress">
-                        <div class="progress-bar-container"><div class="progress-bar" id="subjectDetailBar"></div></div>
-                        <span id="subjectDetailText">0%</span>
+
+                <!-- Sub-tab 1: Weekly Progress (moved from Home) -->
+                <div id="scheduleWeekly" class="sub-tab-content active">
+                    <div class="week-nav">
+                        <button class="week-nav-btn" id="prevWeekBtn">◀</button>
+                        <span class="week-nav-label" id="weekNavLabel">W01 (05/04～05/10)</span>
+                        <button class="week-nav-btn" id="nextWeekBtn">▶</button>
                     </div>
-                    <div class="subject-week-list" id="subjectWeekList">
-                        <!-- Week rows for the subject -->
+                    <div class="subject-overview-grid" id="weeklySubjectCards">
+                        <!-- Subject cards will be injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Sub-tab 2: Subject List / Detail -->
+                <div id="scheduleSubjects" class="sub-tab-content">
+                    <div id="subjectListContainer" class="subject-list">
+                        <!-- Subject list cards injected by JS -->
+                    </div>
+                    <div id="subjectDetailContainer" class="subject-detail hidden">
+                        <button class="back-btn" id="backToSubjectsBtn">← 返回科目列表</button>
+                        <h2 class="subject-detail-title" id="subjectDetailTitle">科目</h2>
+                        <div class="subject-detail-progress">
+                            <div class="progress-bar-container"><div class="progress-bar" id="subjectDetailBar"></div></div>
+                            <span id="subjectDetailText">0%</span>
+                        </div>
+                        <div class="subject-week-list" id="subjectWeekList">
+                            <!-- Week rows for the subject -->
+                        </div>
                     </div>
                 </div>
             </section>

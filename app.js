@@ -31,6 +31,7 @@ let completionStatus = {}; // { "W01": { finance:true, tax:false, civics:false, 
 let reflections = {};
 let activeTab = 'home';
 let activeSubject = null; // when inside subject detail view
+let activeScheduleSubTab = 'weekly'; // 'weekly' or 'subjects'
 let activeNoteWeek = '';
 let editingRowIndex = -1;
 let currentWeekIdx = -1;
@@ -102,6 +103,9 @@ function initEventListeners() {
     document.querySelectorAll('.tab-item').forEach(btn => {
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
+    // Full schedule is now rendered inline, no buttons needed
+
+
     // Weekly navigation buttons (home)
     document.getElementById('prevWeekBtn').addEventListener('click', () => changeWeek(-1));
     document.getElementById('nextWeekBtn').addEventListener('click', () => changeWeek(1));
@@ -128,16 +132,37 @@ function renderAll() {
     const titles = { home: '總覽', schedule: '科目', notes: '筆記', settings: '設定' };
     document.getElementById('pageTitle').textContent = titles[activeTab];
     // Render each tab according to activeTab
-    if (activeTab === 'home') renderHome();
-    if (activeTab === 'schedule') renderSubjectList();
+    if (activeTab === 'schedule') {
+        renderScheduleTab();
+    }
     if (activeTab === 'notes') { renderNotePicker(); renderActiveNote(); }
-    // progress bars – always update
+    // progress bars and full schedule – always update
     updateOverallProgress();
+    renderGlobalProgress();
+    renderFullSchedule();
     updateHeaderStatus();
 }
 
-// --------------------- Home (Weekly Overview) ---------------------
-function renderHome() {
+// --------------------- Schedule Tab (Sub-tab management) ---------------------
+function renderScheduleTab() {
+    // Show/hide sub-tab content
+    document.getElementById('scheduleWeekly').classList.toggle('active', activeScheduleSubTab === 'weekly');
+    document.getElementById('scheduleSubjects').classList.toggle('active', activeScheduleSubTab === 'subjects');
+    // Update sub-tab button styles
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.subtab === activeScheduleSubTab));
+    // Render active sub-tab
+    if (activeScheduleSubTab === 'weekly') renderWeeklyView();
+    if (activeScheduleSubTab === 'subjects') renderSubjectList();
+}
+
+function switchScheduleSubTab(subtab) {
+    activeScheduleSubTab = subtab;
+    activeSubject = null; // reset subject detail when switching
+    renderScheduleTab();
+}
+
+// --------------------- Weekly Progress View ---------------------
+function renderWeeklyView() {
     const wk = scheduleData[currentWeekIdx];
     // week label
     document.getElementById('weekNavLabel').textContent = `${wk.week} (${wk.date})`;
@@ -162,8 +187,6 @@ function renderHome() {
             </div>
         `;
     }).join('');
-    // overall progress bar (percentage of all subject‑week combos completed)
-    // (computed in updateOverallProgress())
 }
 
 function changeWeek(delta) {
@@ -177,13 +200,47 @@ function toggleSubject(week, subjectKey) {
     const status = completionStatus[week][subjectKey];
     completionStatus[week][subjectKey] = !status;
     saveState();
-    // if we are on home (weekly view) re‑render that week's cards
-    if (activeTab === 'home' && scheduleData[currentWeekIdx].week === week) renderHome();
-    // also refresh subject list progress
-    if (activeTab === 'schedule') renderSubjectList();
+    // re-render active schedule sub-tab
+    if (activeTab === 'schedule') renderScheduleTab();
     updateOverallProgress();
+    renderGlobalProgress();
 }
 
+// --------------------- Global Progress Rendering ---------------------
+function calcGlobalProgress(){
+    const totals = { finance:0, tax:0, civics:0, chinese:0 };
+    const dones  = { finance:0, tax:0, civics:0, chinese:0 };
+    scheduleData.forEach(w=>{
+        ['finance','tax','civics','chinese'].forEach(k=>{
+            if (w[k] && w[k].trim()){
+                totals[k]++;
+                if (completionStatus[w.week][k]) dones[k]++;
+            }
+        });
+    });
+    const perc = {};
+    for (const k in totals) perc[k] = totals[k] ? dones[k]/totals[k] : 0;
+    return {perc, totals, dones};
+}
+
+function renderGlobalProgress(){
+    const {perc, totals, dones} = calcGlobalProgress();
+    const names = {finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文'};
+    const container = document.getElementById('globalProgressGrid');
+    const html = ['finance','tax','civics','chinese'].map(k=>{
+        const percent = Math.round(perc[k]*100);
+        const countText = `${dones[k] || 0} / ${totals[k] || 0}`;
+        return `
+        <div class="global-progress-item" data-subject="${k}" style="--subject:var(--${k});">
+            <div class="gp-label">${names[k]}</div>
+            <div class="gp-bar-container">
+                <div class="gp-bar" style="width:${percent}%"></div>
+            </div>
+            <div class="gp-details"><span class="gp-count">${countText}</span> <span class="gp-percent">${percent}%</span></div>
+        </div>`;
+    }).join('');
+    container.innerHTML = html;
+}
 // --------------------- Subject List (Main) ---------------------
 function renderSubjectList() {
     // hide/show subject list vs detail
@@ -214,6 +271,30 @@ function renderSubjectList() {
             </div>
         `;
     }).join('');
+}
+
+// --------------------- Full Schedule Subpage ---------------------
+function renderFullSchedule(){
+    const container = document.getElementById('fullScheduleContainer');
+    if (!container) return; // Prevent error if not on home tab and element is missing
+    let html = `<table class="full-schedule-table"><thead><tr><th>週次</th><th>日期</th><th>財政學</th><th>稅務法規</th><th>公民</th><th>國文</th></tr></thead><tbody>`;
+    scheduleData.forEach(w=>{
+        const f_comp = completionStatus[w.week]['finance'] ? ' class="completed-cell"' : '';
+        const t_comp = completionStatus[w.week]['tax'] ? ' class="completed-cell"' : '';
+        const c_comp = completionStatus[w.week]['civics'] ? ' class="completed-cell"' : '';
+        const ch_comp = completionStatus[w.week]['chinese'] ? ' class="completed-cell"' : '';
+
+        html += `<tr>
+            <td>${w.week}</td>
+            <td>${w.date}</td>
+            <td${f_comp}>${w.finance || ''}</td>
+            <td${t_comp}>${w.tax || ''}</td>
+            <td${c_comp}>${w.civics || ''}</td>
+            <td${ch_comp}>${w.chinese || ''}</td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
 }
 
 function openSubjectDetail(key) {
@@ -430,8 +511,11 @@ function switchTab(tabId) {
     // header title
     const titles={home:'總覽',schedule:'科目',notes:'筆記',settings:'設定'};
     document.getElementById('pageTitle').textContent = titles[tabId];
-    // activate page sections
-    document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active', p.id===`tab-${tabId}`));
+    // hide all tab pages, then show the selected one
+    document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    // also ensure full-schedule subpage is hidden when switching away
+    document.getElementById('tab-home-full').classList.remove('active');
     // activate tab button style
     document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
     // when leaving subject detail, reset activeSubject
@@ -488,4 +572,5 @@ window.switchTab = switchTab;
 window.switchNoteWeek = switchNoteWeek;
 window.openSubjectDetail = openSubjectDetail;
 window.backToSubjectList = backToSubjectList;
+window.switchScheduleSubTab = switchScheduleSubTab;
 // ------------------------------------------------------------

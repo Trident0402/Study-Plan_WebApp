@@ -61,6 +61,11 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 24px 20px 60px;
+    /* PWA standalone safe areas (iPhone notch & home indicator) */
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(60px, env(safe-area-inset-bottom));
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
 }
 
 /* ===== Header ===== */

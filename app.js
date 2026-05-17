@@ -28,11 +28,9 @@ const DEFAULT_SCHEDULE = [
 // State (schedule, per‑subject completion, reflections)
 let scheduleData = [];
 let completionStatus = {}; // { "W01": { finance:true, tax:false, civics:false, chinese:true }, ... }
-let reflections = {};
 let activeTab = 'home';
 let activeSubject = null; // when inside subject detail view
 let activeScheduleSubTab = 'weekly'; // 'weekly' or 'subjects'
-let activeNoteWeek = '';
 let editingRowIndex = -1;
 let currentWeekIdx = -1;
 
@@ -52,11 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // set current week index based on today
     currentWeekIdx = getCurrentWeekIndex();
     if (currentWeekIdx === -1) currentWeekIdx = 0; // fallback to first week
-    
-    // Ensure activeNoteWeek has a default value so notes display something initially
-    if (scheduleData.length > 0) {
-        activeNoteWeek = scheduleData[currentWeekIdx].week;
-    }
     
     // initial render
     renderAll();
@@ -108,8 +101,6 @@ function loadState() {
             });
         }
 
-        const savedRefs = localStorage.getItem('studyPlan_reflections');
-        reflections = savedRefs ? JSON.parse(savedRefs) : {};
     } catch (e) {
         console.error('loadState error', e);
         subjectsData = JSON.parse(JSON.stringify(DEFAULT_SUBJECTS));
@@ -121,7 +112,6 @@ function loadState() {
                 completionStatus[wk.week][sub.id] = false;
             });
         }
-        reflections = {};
     }
 }
 
@@ -129,7 +119,6 @@ function saveState() {
     localStorage.setItem('studyPlan_subjects', JSON.stringify(subjectsData));
     localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
     localStorage.setItem('studyPlan_completion', JSON.stringify(completionStatus));
-    localStorage.setItem('studyPlan_reflections', JSON.stringify(reflections));
 }
 
 // ------------------------------------------------------------
@@ -155,10 +144,6 @@ function initEventListeners() {
     document.getElementById('closeSheet').addEventListener('click', saveEditFromSheet);
     document.getElementById('deleteWeekBtn').addEventListener('click', deleteCurrentWeek);
     document.getElementById('addSubjectConfirmBtn').addEventListener('click', addNewSubject);
-    // Auto‑save for notes
-    ['noteGoal','noteHarvest','noteMessage'].forEach(id => {
-        document.getElementById(id).addEventListener('input', debounce(saveActiveNote, 800));
-    });
     // Back button on subject detail
     document.getElementById('backToSubjectsBtn').addEventListener('click', backToSubjectList);
 }
@@ -169,13 +154,12 @@ function renderAll() {
     // Header week pill reflects current week
     document.getElementById('currentWeekPill').textContent = scheduleData[currentWeekIdx].week;
     // Update page title (depends on active tab)
-    const titles = { home: '總覽', schedule: '科目', notes: '筆記', settings: '設定' };
+    const titles = { home: '總覽', schedule: '科目', settings: '設定' };
     document.getElementById('pageTitle').textContent = titles[activeTab];
     // Render each tab according to activeTab
     if (activeTab === 'schedule') {
         renderScheduleTab();
     }
-    if (activeTab === 'notes') { renderNotePicker(); renderActiveNote(); }
     // progress bars and full schedule – always update
     updateOverallProgress();
     renderGlobalProgress();
@@ -476,7 +460,6 @@ function deleteCurrentWeek() {
     const wk = scheduleData[editingRowIndex].week;
     scheduleData.splice(editingRowIndex,1);
     delete completionStatus[wk];
-    delete reflections[wk];
     // re‑index currentWeekIdx if needed
     if (currentWeekIdx >= scheduleData.length) currentWeekIdx = scheduleData.length-1;
     saveState();
@@ -525,7 +508,7 @@ function confirmReset() {
 }
 
 function exportData() {
-    const data = { subjectsData, scheduleData, completionStatus, reflections };
+    const data = { subjectsData, scheduleData, completionStatus };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=`讀書規劃備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
@@ -546,7 +529,6 @@ function handleImport(e) {
             if (data.subjectsData) subjectsData = data.subjectsData;
             if (data.scheduleData) scheduleData = data.scheduleData;
             if (data.completionStatus) completionStatus = data.completionStatus;
-            if (data.reflections) reflections = data.reflections;
             
             // Harmonize dynamic structures in case imported data has mismatches
             for (const wk of scheduleData) {
@@ -571,61 +553,14 @@ function handleImport(e) {
     reader.readAsText(file);
 }
 
-// ------------------------------------------------------------
-// Note Tab (unchanged – still per week)
-function renderNotePicker() {
-    const container = document.getElementById('weekPickerScroll');
-    if (!container) return;
-    container.innerHTML = scheduleData.map(w=>`<div class="week-pill ${activeNoteWeek===w.week?'active':''}" onclick="switchNoteWeek('${w.week}')">${w.week}</div>`).join('');
-    const act = container.querySelector('.active');
-    if (act) act.scrollIntoView({behavior:'smooth',inline:'center'});
-}
 
-function switchNoteWeek(week) {
-    activeNoteWeek = week;
-    renderNotePicker();
-    renderActiveNote();
-}
-
-function renderActiveNote() {
-    const data = reflections[activeNoteWeek]||{};
-    const goalEl = document.getElementById('noteGoal');
-    const harvestEl = document.getElementById('noteHarvest');
-    const msgEl = document.getElementById('noteMessage');
-    
-    if (goalEl) goalEl.value = data.goal||'';
-    if (harvestEl) harvestEl.value = data.harvest||'';
-    if (msgEl) msgEl.value = data.message||'';
-}
-
-function saveActiveNote() {
-    const goalEl = document.getElementById('noteGoal');
-    const harvestEl = document.getElementById('noteHarvest');
-    const msgEl = document.getElementById('noteMessage');
-    
-    reflections[activeNoteWeek] = {
-        goal: goalEl ? goalEl.value : '',
-        harvest: harvestEl ? harvestEl.value : '',
-        message: msgEl ? msgEl.value : ''
-    };
-    saveState();
-    showAutoSaveIndicator();
-}
-
-function showAutoSaveIndicator(){
-    const el=document.getElementById('saveIndicator');
-    if (el) {
-        el.classList.add('show');
-        setTimeout(()=>el.classList.remove('show'),1500);
-    }
-}
 
 // ------------------------------------------------------------
 // Tab Switching helper
 function switchTab(tabId) {
     activeTab = tabId;
     // header title
-    const titles={home:'總覽',schedule:'科目',notes:'筆記',settings:'設定'};
+    const titles={home:'總覽',schedule:'科目',settings:'設定'};
     document.getElementById('pageTitle').textContent = titles[tabId];
     // hide all tab pages, then show the selected one
     document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
@@ -735,7 +670,6 @@ window.exportData = exportData;
 window.importData = importData;
 window.handleImport = handleImport;
 window.switchTab = switchTab;
-window.switchNoteWeek = switchNoteWeek;
 window.openSubjectDetail = openSubjectDetail;
 window.backToSubjectList = backToSubjectList;
 window.switchScheduleSubTab = switchScheduleSubTab;

@@ -23,24 +23,6 @@
     <!-- iPad Pro -->
     <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png">
 
-    <!-- 啟動畫面 (Splash Screen) -->
-    <!-- iPad Pro 12.9" (直向) -->
-    <link rel="apple-touch-startup-image"
-        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
-        href="splash-2048x2732.png">
-    <!-- iPad Pro 12.9" (橫向) -->
-    <link rel="apple-touch-startup-image"
-        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
-        href="splash-2732x2048.png">
-
-    <!-- iPad Air 10.9" (直向) -->
-    <link rel="apple-touch-startup-image"
-        media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
-        href="splash-1640x2360.png">
-    <!-- iPad Air 10.9" (橫向) -->
-    <link rel="apple-touch-startup-image"
-        media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
-        href="splash-2360x1640.png">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,27 +137,6 @@
                 </div>
             </section>
 
-            <!-- Tab 3 – Notes -->
-            <section id="tab-notes" class="tab-page">
-                <div class="week-picker-container">
-                    <div id="weekPickerScroll" class="week-picker-scroll"></div>
-                </div>
-                <div class="notes-container">
-                    <div class="note-box">
-                        <div class="note-label">🎯 本週目標</div>
-                        <textarea id="noteGoal" placeholder="點擊開始寫下目標..."></textarea>
-                    </div>
-                    <div class="note-box">
-                        <div class="note-label">🌱 本週收穫</div>
-                        <textarea id="noteHarvest" placeholder="記錄這週學到了什麼..."></textarea>
-                    </div>
-                    <div class="note-box">
-                        <div class="note-label">⭐ 給自己的話</div>
-                        <textarea id="noteMessage" placeholder="給自己一些鼓勵..."></textarea>
-                    </div>
-                    <div class="auto-save-indicator" id="saveIndicator"><span class="save-icon">✓</span> 已自動儲存</div>
-                </div>
-            </section>
 
             <!-- Tab 4 – Settings -->
             <section id="tab-settings" class="tab-page">
@@ -213,8 +174,7 @@
                     class="tab-label">總覽</span></button>
             <button class="tab-item" data-tab="schedule"><span class="tab-icon">📋</span><span
                     class="tab-label">科目</span></button>
-            <button class="tab-item" data-tab="notes"><span class="tab-icon">📝</span><span
-                    class="tab-label">筆記</span></button>
+
             <button class="tab-item" data-tab="settings"><span class="tab-icon">⚙️</span><span
                     class="tab-label">設定</span></button>
         </nav>

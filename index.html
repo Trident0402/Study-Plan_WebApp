@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="國考讀書規劃 - 週次與科目進度管理">
     <title>讀書規劃</title>
     <!-- PWA -->
@@ -12,35 +14,49 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="讀書規劃">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- 共用 mac -->
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
     <!-- 共用/iPhone -->
     <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
     <!-- iPad AIR -->
     <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
     <!-- iPad Pro -->
     <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png">
-    
+
     <!-- 啟動畫面 (Splash Screen) -->
     <!-- iPad Pro 12.9" (直向) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash-2048x2732.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="splash-2048x2732.png">
     <!-- iPad Pro 12.9" (橫向) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash-2732x2048.png">
-    
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="splash-2732x2048.png">
+
     <!-- iPad Air 10.9" (直向) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash-1640x2360.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="splash-1640x2360.png">
     <!-- iPad Air 10.9" (橫向) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="splash-2360x1640.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+        href="splash-2360x1640.png">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div id="errorLog" style="position:fixed;top:0;left:0;z-index:9999;background:red;color:white;padding:10px;display:none;"></div>
+    <div id="errorLog"
+        style="position:fixed;top:0;left:0;z-index:9999;background:red;color:white;padding:10px;display:none;"></div>
     <script>
-        window.onerror = function(msg, url, line, col, error) {
+        window.onerror = function (msg, url, line, col, error) {
             var el = document.getElementById('errorLog');
-            if(el) {
+            if (el) {
                 el.style.display = 'block';
                 el.innerHTML += '<p>' + msg + ' (Line ' + line + ')</p>';
             }
@@ -59,7 +75,8 @@
             <!-- Tab 1 – 總覽 (Progress Overview) -->
             <section id="tab-home" class="tab-page active">
                 <!-- 總體進度 -->
-                <div class="section-title" style="margin-top:4px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📊 總體進度</div>
+                <div class="section-title"
+                    style="margin-top:4px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📊 總體進度</div>
                 <div class="overall-progress-card">
                     <div class="op-info">
                         <span class="op-title">總體進度</span>
@@ -67,20 +84,26 @@
                     </div>
                     <div class="op-circle-wrapper">
                         <svg class="op-circle" viewBox="0 0 36 36">
-                            <path class="op-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path class="op-circle-fill" id="opCircleFill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="op-circle-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="op-circle-fill" id="opCircleFill" stroke-dasharray="0, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         </svg>
                         <div class="op-text" id="overallProgressText">0%</div>
                     </div>
                 </div>
                 <!-- 各科進度 -->
-                <div class="section-title" style="margin-top:20px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📚 各科進度</div>
+                <div class="section-title"
+                    style="margin-top:20px; font-size:0.85rem; font-weight:700; color:var(--primary-dark);">📚 各科進度
+                </div>
                 <div class="global-progress-grid" id="globalProgressGrid">
                     <!-- 4 個科目全局進度條由 JS 動態注入 -->
                 </div>
                 <!-- 全部排程表 (直接呈現於總覽下方) -->
-                <div class="section-title" style="margin-top:24px; font-size:1rem; font-weight:700; color:var(--primary-dark);">📅 全部排程表</div>
-                <div class="full-schedule-container" id="fullScheduleContainer" style="margin-top: 12px; margin-bottom: 24px;"></div>
+                <div class="section-title"
+                    style="margin-top:24px; font-size:1rem; font-weight:700; color:var(--primary-dark);">📅 全部排程表</div>
+                <div class="full-schedule-container" id="fullScheduleContainer"
+                    style="margin-top: 12px; margin-bottom: 24px;"></div>
             </section>
 
 
@@ -88,8 +111,10 @@
             <section id="tab-schedule" class="tab-page">
                 <!-- Sub-tab navigation -->
                 <div class="sub-tab-nav" id="scheduleSubTabNav">
-                    <button class="sub-tab-btn active" data-subtab="weekly" onclick="switchScheduleSubTab('weekly')">📅 週進度</button>
-                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchScheduleSubTab('subjects')">📚 各科目進度</button>
+                    <button class="sub-tab-btn active" data-subtab="weekly" onclick="switchScheduleSubTab('weekly')">📅
+                        週進度</button>
+                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchScheduleSubTab('subjects')">📚
+                        各科目進度</button>
                 </div>
 
                 <!-- Sub-tab 1: Weekly Progress (moved from Home) -->
@@ -100,7 +125,9 @@
                         <button class="week-nav-btn" id="nextWeekBtn">▶</button>
                     </div>
                     <div style="text-align:center; margin-bottom: 12px;">
-                        <button onclick="openBottomSheet(currentWeekIdx)" style="padding: 6px 16px; border-radius: 20px; background: white; border: 1px solid var(--border-light); font-size: 0.85rem; color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">✏️ 編輯此週內容</button>
+                        <button onclick="openBottomSheet(currentWeekIdx)"
+                            style="padding: 6px 16px; border-radius: 20px; background: white; border: 1px solid var(--border-light); font-size: 0.85rem; color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">✏️
+                            編輯此週內容</button>
                     </div>
                     <div class="subject-overview-grid" id="weeklySubjectCards">
                         <!-- Subject cards will be injected by JS -->
@@ -116,7 +143,9 @@
                         <button class="back-btn" id="backToSubjectsBtn">← 返回科目列表</button>
                         <h2 class="subject-detail-title" id="subjectDetailTitle">科目</h2>
                         <div class="subject-detail-progress">
-                            <div class="progress-bar-container"><div class="progress-bar" id="subjectDetailBar"></div></div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" id="subjectDetailBar"></div>
+                            </div>
                             <span id="subjectDetailText">0%</span>
                         </div>
                         <div class="subject-week-list" id="subjectWeekList">
@@ -153,36 +182,53 @@
                 <div class="settings-group">
                     <h3 class="settings-title">科目與排程管理</h3>
                     <div class="settings-list">
-                        <button class="settings-item" onclick="openAddWeek()"><span class="item-icon">➕</span><span class="item-text">新增一週排程</span><span class="item-arrow">›</span></button>
-                        <button class="settings-item" onclick="openSubjectSheet()"><span class="item-icon">📚</span><span class="item-text">新增科目管理</span><span class="item-arrow">›</span></button>
-                        <button class="settings-item danger" onclick="confirmReset()"><span class="item-icon">🔄</span><span class="item-text">重置所有資料</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item" onclick="openAddWeek()"><span class="item-icon">➕</span><span
+                                class="item-text">新增一週排程</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item" onclick="openSubjectSheet()"><span
+                                class="item-icon">📚</span><span class="item-text">新增科目管理</span><span
+                                class="item-arrow">›</span></button>
+                        <button class="settings-item danger" onclick="confirmReset()"><span
+                                class="item-icon">🔄</span><span class="item-text">重置所有資料</span><span
+                                class="item-arrow">›</span></button>
                     </div>
                 </div>
                 <div class="settings-group">
                     <h3 class="settings-title">資料備份</h3>
                     <div class="settings-list">
-                        <button class="settings-item" onclick="exportData()"><span class="item-icon">📤</span><span class="item-text">匯出備份 (JSON)</span><span class="item-arrow">›</span></button>
-                        <button class="settings-item" onclick="importData()"><span class="item-icon">📥</span><span class="item-text">匯入資料</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item" onclick="exportData()"><span class="item-icon">📤</span><span
+                                class="item-text">匯出備份 (JSON)</span><span class="item-arrow">›</span></button>
+                        <button class="settings-item" onclick="importData()"><span class="item-icon">📥</span><span
+                                class="item-text">匯入資料</span><span class="item-arrow">›</span></button>
                     </div>
                 </div>
-                <div class="settings-info"><p>讀書規劃 v3.0 (Mobile App Style)</p><p>每一天的努力都在累積實力 💪</p></div>
+                <div class="settings-info">
+                    <p>讀書規劃 v3.0 (Mobile App Style)</p>
+                    <p>每一天的努力都在累積實力 💪</p>
+                </div>
             </section>
         </main>
         <!-- Bottom Tab Bar -->
         <nav class="tab-bar">
-            <button class="tab-item active" data-tab="home"><span class="tab-icon">🏠</span><span class="tab-label">總覽</span></button>
-            <button class="tab-item" data-tab="schedule"><span class="tab-icon">📋</span><span class="tab-label">科目</span></button>
-            <button class="tab-item" data-tab="notes"><span class="tab-icon">📝</span><span class="tab-label">筆記</span></button>
-            <button class="tab-item" data-tab="settings"><span class="tab-icon">⚙️</span><span class="tab-label">設定</span></button>
+            <button class="tab-item active" data-tab="home"><span class="tab-icon">🏠</span><span
+                    class="tab-label">總覽</span></button>
+            <button class="tab-item" data-tab="schedule"><span class="tab-icon">📋</span><span
+                    class="tab-label">科目</span></button>
+            <button class="tab-item" data-tab="notes"><span class="tab-icon">📝</span><span
+                    class="tab-label">筆記</span></button>
+            <button class="tab-item" data-tab="settings"><span class="tab-icon">⚙️</span><span
+                    class="tab-label">設定</span></button>
         </nav>
     </div>
     <!-- Bottom Sheet (edit) -->
     <div class="bottom-sheet-overlay" id="editSheetOverlay">
         <div class="bottom-sheet" id="editSheet">
             <div class="sheet-handle"></div>
-            <div class="sheet-header"><h2 id="sheetTitle">編輯週次</h2><button class="sheet-close" id="closeSheet">完成</button></div>
+            <div class="sheet-header">
+                <h2 id="sheetTitle">編輯週次</h2><button class="sheet-close" id="closeSheet">完成</button>
+            </div>
             <div class="sheet-content">
-                <div class="input-group"><label>日期範圍</label><input type="text" id="editDate" placeholder="MM/DD～MM/DD"></div>
+                <div class="input-group"><label>日期範圍</label><input type="text" id="editDate" placeholder="MM/DD～MM/DD">
+                </div>
                 <div id="dynamicSubjectsEditContainer"></div>
                 <div class="sheet-actions"><button class="btn-delete" id="deleteWeekBtn">刪除此週</button></div>
             </div>
@@ -192,14 +238,17 @@
     <div class="bottom-sheet-overlay" id="subjectSheetOverlay">
         <div class="bottom-sheet" id="subjectSheet">
             <div class="sheet-handle"></div>
-            <div class="sheet-header"><h2>新增科目</h2><button class="sheet-close" onclick="closeSubjectSheet()">取消</button></div>
+            <div class="sheet-header">
+                <h2>新增科目</h2><button class="sheet-close" onclick="closeSubjectSheet()">取消</button>
+            </div>
             <div class="sheet-content">
                 <div class="input-group">
                     <label>科目名稱</label>
                     <input type="text" id="newSubjectName" placeholder="例如：經濟學、民法...">
                 </div>
                 <div style="margin-top: 24px;">
-                    <button class="btn-delete" id="addSubjectConfirmBtn" style="width:100%; background:var(--primary-dark); color:white; border:none; border-radius:12px; padding:12px; font-weight:700; cursor:pointer;">確認新增</button>
+                    <button class="btn-delete" id="addSubjectConfirmBtn"
+                        style="width:100%; background:var(--primary-dark); color:white; border:none; border-radius:12px; padding:12px; font-weight:700; cursor:pointer;">確認新增</button>
                 </div>
             </div>
         </div>
@@ -217,4 +266,5 @@
         }
     </script>
 </body>
+
 </html>

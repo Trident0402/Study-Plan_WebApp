@@ -388,13 +388,15 @@ function updateOverallProgress() {
     const ratio = total===0?0:done/total;
     const percentage = Math.round(ratio*100);
     
-    // Update circular progress SVG
-    const circleFill = document.getElementById('opCircleFill');
-    if (circleFill) {
-        circleFill.setAttribute('stroke-dasharray', `${percentage}, 100`);
-    }
     const txt = document.getElementById('overallProgressText');
-    if (txt) txt.textContent = `${percentage}%`;
+    if (txt) {
+        const digits = {
+            '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
+            '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+        };
+        const stylizedNum = String(percentage).split('').map(d => digits[d] || d).join('');
+        txt.textContent = `♫ ⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ ${stylizedNum}٪ ﹞ ✦ *`;
+    }
 }
 
 function updateHeaderStatus() {

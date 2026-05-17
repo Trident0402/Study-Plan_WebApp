@@ -36,6 +36,14 @@ let activeNoteWeek = '';
 let editingRowIndex = -1;
 let currentWeekIdx = -1;
 
+let subjectsData = [];
+const DEFAULT_SUBJECTS = [
+    { id: 'finance', name: '財政學', color: '#d4a574' },
+    { id: 'tax', name: '稅務法規', color: '#a8c5a0' },
+    { id: 'civics', name: '公民', color: '#a0b8d4' },
+    { id: 'chinese', name: '國文', color: '#d4a0b8' }
+];
+
 // ------------------------------------------------------------
 // Init
 document.addEventListener('DOMContentLoaded', () => {
@@ -44,6 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // set current week index based on today
     currentWeekIdx = getCurrentWeekIndex();
     if (currentWeekIdx === -1) currentWeekIdx = 0; // fallback to first week
+    
+    // Ensure activeNoteWeek has a default value so notes display something initially
+    if (scheduleData.length > 0) {
+        activeNoteWeek = scheduleData[currentWeekIdx].week;
+    }
+    
     // initial render
     renderAll();
 });
@@ -52,8 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load / Save (with backward compatibility)
 function loadState() {
     try {
+        const savedSubjects = localStorage.getItem('studyPlan_subjects');
+        subjectsData = savedSubjects ? JSON.parse(savedSubjects) : JSON.parse(JSON.stringify(DEFAULT_SUBJECTS));
+
         const savedSchedule = localStorage.getItem('studyPlan_schedule');
         scheduleData = savedSchedule ? JSON.parse(savedSchedule) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+
         // Load completion – may be old format (boolean) or new object
         const savedComp = localStorage.getItem('studyPlan_completion');
         if (savedComp) {
@@ -61,11 +79,14 @@ function loadState() {
             // Detect old format: any value is boolean
             const isOld = Object.values(raw).some(v => typeof v === 'boolean');
             if (isOld) {
-                // Convert to new per‑subject format (all true/false depending on old value)
+                // Convert to new per‑subject format
                 completionStatus = {};
                 for (const wk of scheduleData) {
                     const flag = raw[wk.week] === true;
-                    completionStatus[wk.week] = { finance: flag, tax: flag, civics: flag, chinese: flag };
+                    completionStatus[wk.week] = {};
+                    subjectsData.forEach(sub => {
+                        completionStatus[wk.week][sub.id] = flag;
+                    });
                 }
             } else {
                 completionStatus = raw;
@@ -73,24 +94,39 @@ function loadState() {
         } else {
             // initialise empty per‑subject object
             completionStatus = {};
-            for (const wk of scheduleData) {
-                completionStatus[wk.week] = { finance: false, tax: false, civics: false, chinese: false };
-            }
         }
+
+        // Harmonize dynamic structures
+        for (const wk of scheduleData) {
+            if (!completionStatus[wk.week]) {
+                completionStatus[wk.week] = {};
+            }
+            subjectsData.forEach(sub => {
+                if (completionStatus[wk.week][sub.id] === undefined) {
+                    completionStatus[wk.week][sub.id] = false;
+                }
+            });
+        }
+
         const savedRefs = localStorage.getItem('studyPlan_reflections');
         reflections = savedRefs ? JSON.parse(savedRefs) : {};
     } catch (e) {
         console.error('loadState error', e);
+        subjectsData = JSON.parse(JSON.stringify(DEFAULT_SUBJECTS));
         scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
         completionStatus = {};
         for (const wk of scheduleData) {
-            completionStatus[wk.week] = { finance: false, tax: false, civics: false, chinese: false };
+            completionStatus[wk.week] = {};
+            subjectsData.forEach(sub => {
+                completionStatus[wk.week][sub.id] = false;
+            });
         }
         reflections = {};
     }
 }
 
 function saveState() {
+    localStorage.setItem('studyPlan_subjects', JSON.stringify(subjectsData));
     localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
     localStorage.setItem('studyPlan_completion', JSON.stringify(completionStatus));
     localStorage.setItem('studyPlan_reflections', JSON.stringify(reflections));
@@ -113,8 +149,12 @@ function initEventListeners() {
     document.getElementById('editSheetOverlay').addEventListener('click', e => {
         if (e.target.id === 'editSheetOverlay') closeBottomSheet();
     });
+    document.getElementById('subjectSheetOverlay').addEventListener('click', e => {
+        if (e.target.id === 'subjectSheetOverlay') closeSubjectSheet();
+    });
     document.getElementById('closeSheet').addEventListener('click', saveEditFromSheet);
     document.getElementById('deleteWeekBtn').addEventListener('click', deleteCurrentWeek);
+    document.getElementById('addSubjectConfirmBtn').addEventListener('click', addNewSubject);
     // Auto‑save for notes
     ['noteGoal','noteHarvest','noteMessage'].forEach(id => {
         document.getElementById(id).addEventListener('input', debounce(saveActiveNote, 800));
@@ -164,24 +204,22 @@ function switchScheduleSubTab(subtab) {
 // --------------------- Weekly Progress View ---------------------
 function renderWeeklyView() {
     const wk = scheduleData[currentWeekIdx];
+    if (!wk) {
+        document.getElementById('weeklySubjectCards').innerHTML = '<div style="grid-column: span 2; text-align: center; color: var(--text-secondary); padding: 20px;">無此週排程資料</div>';
+        return;
+    }
     // week label
     document.getElementById('weekNavLabel').textContent = `${wk.week} (${wk.date})`;
     // subject cards
     const container = document.getElementById('weeklySubjectCards');
-    const subjects = [
-        { key: 'finance', label: '財政學', value: wk.finance },
-        { key: 'tax', label: '稅務法規', value: wk.tax },
-        { key: 'civics', label: '公民', value: wk.civics },
-        { key: 'chinese', label: '國文', value: wk.chinese }
-    ];
-    container.innerHTML = subjects.map(s => {
-        const checked = completionStatus[wk.week][s.key];
-        const displayVal = s.value && s.value.trim() ? escapeHtml(s.value).replace(/\n/g, ' ') : '(無安排)';
+    container.innerHTML = subjectsData.map(s => {
+        const checked = completionStatus[wk.week] ? completionStatus[wk.week][s.id] : false;
+        const displayVal = wk[s.id] && wk[s.id].trim() ? escapeHtml(wk[s.id]).replace(/\n/g, '<br>') : '(無安排)';
         return `
-            <div class="subject-card" data-key="${s.key}">
+            <div class="subject-card" data-key="${s.id}" style="border-left: 4px solid ${s.color};">
                 <div class="subject-card-header">
-                    <span class="subject-card-title">${s.label}</span>
-                    <div class="subject-checkbox ${checked ? 'checked' : ''}" onclick="toggleSubject('${wk.week}','${s.key}')"></div>
+                    <span class="subject-card-title">${s.name}</span>
+                    <div class="subject-checkbox ${checked ? 'checked' : ''}" onclick="toggleSubject('${wk.week}','${s.id}')"></div>
                 </div>
                 <div class="subject-card-content">${displayVal}</div>
             </div>
@@ -208,31 +246,40 @@ function toggleSubject(week, subjectKey) {
 
 // --------------------- Global Progress Rendering ---------------------
 function calcGlobalProgress(){
-    const totals = { finance:0, tax:0, civics:0, chinese:0 };
-    const dones  = { finance:0, tax:0, civics:0, chinese:0 };
+    const totals = {};
+    const dones  = {};
+    subjectsData.forEach(sub => {
+        totals[sub.id] = 0;
+        dones[sub.id] = 0;
+    });
+
     scheduleData.forEach(w=>{
-        ['finance','tax','civics','chinese'].forEach(k=>{
+        subjectsData.forEach(sub=>{
+            const k = sub.id;
             if (w[k] && w[k].trim()){
                 totals[k]++;
-                if (completionStatus[w.week][k]) dones[k]++;
+                if (completionStatus[w.week] && completionStatus[w.week][k]) dones[k]++;
             }
         });
     });
     const perc = {};
-    for (const k in totals) perc[k] = totals[k] ? dones[k]/totals[k] : 0;
+    subjectsData.forEach(sub => {
+        const k = sub.id;
+        perc[k] = totals[k] ? dones[k]/totals[k] : 0;
+    });
     return {perc, totals, dones};
 }
 
 function renderGlobalProgress(){
     const {perc, totals, dones} = calcGlobalProgress();
-    const names = {finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文'};
     const container = document.getElementById('globalProgressGrid');
-    const html = ['finance','tax','civics','chinese'].map(k=>{
+    const html = subjectsData.map(sub=>{
+        const k = sub.id;
         const percent = Math.round(perc[k]*100);
         const countText = `${dones[k] || 0} / ${totals[k] || 0}`;
         return `
-        <div class="global-progress-item" data-subject="${k}" style="--subject:var(--${k});">
-            <div class="gp-label">${names[k]}</div>
+        <div class="global-progress-item" data-subject="${k}" style="--subject:${sub.color};">
+            <div class="gp-label">${sub.name}</div>
             <div class="gp-bar-container">
                 <div class="gp-bar" style="width:${percent}%"></div>
             </div>
@@ -241,6 +288,7 @@ function renderGlobalProgress(){
     }).join('');
     container.innerHTML = html;
 }
+
 // --------------------- Subject List (Main) ---------------------
 function renderSubjectList() {
     // hide/show subject list vs detail
@@ -254,20 +302,18 @@ function renderSubjectList() {
     }
     listContainer.classList.remove('hidden');
     detailContainer.classList.add('hidden');
-    const subjects = ['finance','tax','civics','chinese'];
-    const subjectNames = { finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文' };
-    const subjectColors = { finance:'var(--finance)', tax:'var(--tax)', civics:'var(--civics)', chinese:'var(--chinese)' };
-    listContainer.innerHTML = subjects.map(key => {
+    listContainer.innerHTML = subjectsData.map(sub => {
+        const key = sub.id;
         const total = scheduleData.filter(w=> w[key] && w[key].trim()).length;
-        const done = scheduleData.filter(w=> completionStatus[w.week][key]).length;
+        const done = scheduleData.filter(w=> completionStatus[w.week] && completionStatus[w.week][key]).length;
         const ratio = total===0?0:done/total;
         return `
-            <div class="subject-list-card" onclick="openSubjectDetail('${key}')">
+            <div class="subject-list-card" onclick="openSubjectDetail('${key}')" style="border-left: 4px solid ${sub.color};">
                 <div class="subject-list-header">
-                    <span class="subject-list-title">${subjectNames[key]}</span>
+                    <span class="subject-list-title">${sub.name}</span>
                     <span class="subject-list-count">${done}/${total}</span>
                 </div>
-                <div class="subject-list-progress"><div class="progress-bar" style="width:${ratio*100}%"></div></div>
+                <div class="subject-list-progress"><div class="progress-bar" style="width:${ratio*100}%; background: ${sub.color};"></div></div>
             </div>
         `;
     }).join('');
@@ -277,20 +323,21 @@ function renderSubjectList() {
 function renderFullSchedule(){
     const container = document.getElementById('fullScheduleContainer');
     if (!container) return; // Prevent error if not on home tab and element is missing
-    let html = `<table class="full-schedule-table"><thead><tr><th>週次</th><th>日期</th><th>財政學</th><th>稅務法規</th><th>公民</th><th>國文</th></tr></thead><tbody>`;
+    
+    let headerCols = subjectsData.map(sub => `<th>${sub.name}</th>`).join('');
+    let html = `<table class="full-schedule-table"><thead><tr><th>週次</th><th>日期</th>${headerCols}</tr></thead><tbody>`;
+    
     scheduleData.forEach(w=>{
-        const f_comp = completionStatus[w.week]['finance'] ? ' class="completed-cell"' : '';
-        const t_comp = completionStatus[w.week]['tax'] ? ' class="completed-cell"' : '';
-        const c_comp = completionStatus[w.week]['civics'] ? ' class="completed-cell"' : '';
-        const ch_comp = completionStatus[w.week]['chinese'] ? ' class="completed-cell"' : '';
+        let rowCells = subjectsData.map(sub => {
+            const isComp = completionStatus[w.week] && completionStatus[w.week][sub.id];
+            const compClass = isComp ? ' class="completed-cell"' : '';
+            return `<td${compClass}>${w[sub.id] || ''}</td>`;
+        }).join('');
 
         html += `<tr>
             <td>${w.week}</td>
             <td>${w.date}</td>
-            <td${f_comp}>${w.finance || ''}</td>
-            <td${t_comp}>${w.tax || ''}</td>
-            <td${c_comp}>${w.civics || ''}</td>
-            <td${ch_comp}>${w.chinese || ''}</td>
+            ${rowCells}
         </tr>`;
     });
     html += `</tbody></table>`;
@@ -308,25 +355,34 @@ function backToSubjectList() {
 }
 
 function renderSubjectDetail(subjectKey) {
-    const subjectNames = { finance:'財政學', tax:'稅務法規', civics:'公民', chinese:'國文' };
-    document.getElementById('subjectDetailTitle').textContent = subjectNames[subjectKey];
+    const subObj = subjectsData.find(s => s.id === subjectKey);
+    if (!subObj) return;
+
+    document.getElementById('subjectDetailTitle').textContent = subObj.name;
     // progress bar for this subject
     const total = scheduleData.filter(w=> w[subjectKey] && w[subjectKey].trim()).length;
-    const done = scheduleData.filter(w=> completionStatus[w.week][subjectKey]).length;
+    const done = scheduleData.filter(w=> completionStatus[w.week] && completionStatus[w.week][subjectKey]).length;
     const ratio = total===0?0:done/total;
-    document.getElementById('subjectDetailBar').style.width = `${ratio*100}%`;
-    document.getElementById('subjectDetailText').textContent = `${Math.round(ratio*100)}%`;
+    
+    const bar = document.getElementById('subjectDetailBar');
+    if (bar) {
+        bar.style.width = `${ratio*100}%`;
+        bar.style.backgroundColor = subObj.color;
+    }
+    const txt = document.getElementById('subjectDetailText');
+    if (txt) txt.textContent = `${Math.round(ratio*100)}%`;
+    
     // list of weeks that have this subject
     const list = document.getElementById('subjectWeekList');
     list.innerHTML = scheduleData.map((wk,i)=>{
         if (!wk[subjectKey] || !wk[subjectKey].trim()) return '';
-        const checked = completionStatus[wk.week][subjectKey];
+        const checked = completionStatus[wk.week] ? completionStatus[wk.week][subjectKey] : false;
         return `
-            <div class="week-item">
+            <div class="week-item" style="border-left: 4px solid ${subObj.color};">
                 <div class="week-info">
                     <span class="week-label">${wk.week}</span>
                     <span class="week-date">${wk.date}</span>
-                    <div class="subject-card-content">${escapeHtml(wk[subjectKey]).replace(/\n/g, ' ')}</div>
+                    <div class="subject-card-content">${escapeHtml(wk[subjectKey]).replace(/\n/g, '<br>')}</div>
                 </div>
                 <div class="subject-checkbox ${checked?'checked':''}" onclick="toggleSubject('${wk.week}','${subjectKey}')"></div>
             </div>
@@ -336,39 +392,55 @@ function renderSubjectDetail(subjectKey) {
 
 // --------------------- Overall Progress ---------------------
 function updateOverallProgress() {
-    // total subject‑week combos (only where the subject has content)
     let total = 0, done = 0;
     for (const wk of scheduleData) {
-        ['finance','tax','civics','chinese'].forEach(k=>{
-            if (wk[k] && wk[k].trim()) {
+        subjectsData.forEach(sub => {
+            if (wk[sub.id] && wk[sub.id].trim()) {
                 total++;
-                if (completionStatus[wk.week][k]) done++;
+                if (completionStatus[wk.week] && completionStatus[wk.week][sub.id]) done++;
             }
         });
     }
     const ratio = total===0?0:done/total;
-    const bar = document.getElementById('overallProgressBar');
-    if (bar) bar.style.width = `${ratio*100}%`;
+    const percentage = Math.round(ratio*100);
+    
+    // Update circular progress SVG
+    const circleFill = document.getElementById('opCircleFill');
+    if (circleFill) {
+        circleFill.setAttribute('stroke-dasharray', `${percentage}, 100`);
+    }
     const txt = document.getElementById('overallProgressText');
-    if (txt) txt.textContent = `${Math.round(ratio*100)}%`;
+    if (txt) txt.textContent = `${percentage}%`;
 }
 
 function updateHeaderStatus() {
     // show current week pill (already set in renderAll via currentWeekIdx)
-    // could also highlight if today is inside week – already handled on load
 }
 
 // ------------------------------------------------------------
-// Bottom Sheet (Edit week – unchanged from previous version)
+// Bottom Sheet (Edit week)
 function openBottomSheet(index) {
     editingRowIndex = index;
     const row = scheduleData[index];
+    if (!row) return;
+
     document.getElementById('sheetTitle').textContent = `編輯 ${row.week}`;
-    document.getElementById('editDate').value = row.date;
-    document.getElementById('editFinance').value = row.finance;
-    document.getElementById('editTax').value = row.tax;
-    document.getElementById('editCivics').value = row.civics;
-    document.getElementById('editChinese').value = row.chinese;
+    document.getElementById('editDate').value = row.date || '';
+
+    // Generate dynamic inputs for all subjects
+    const container = document.getElementById('dynamicSubjectsEditContainer');
+    if (container) {
+        container.innerHTML = subjectsData.map(sub => {
+            const val = row[sub.id] || '';
+            return `
+                <div class="input-group">
+                    <label>${sub.name}</label>
+                    <textarea id="edit_sub_${sub.id}" rows="2">${val}</textarea>
+                </div>
+            `;
+        }).join('');
+    }
+
     document.getElementById('editSheetOverlay').classList.add('active');
 }
 
@@ -380,11 +452,18 @@ function closeBottomSheet() {
 function saveEditFromSheet() {
     if (editingRowIndex < 0) return;
     const row = scheduleData[editingRowIndex];
+    if (!row) return;
+
     row.date = document.getElementById('editDate').value;
-    row.finance = document.getElementById('editFinance').value;
-    row.tax = document.getElementById('editTax').value;
-    row.civics = document.getElementById('editCivics').value;
-    row.chinese = document.getElementById('editChinese').value;
+    
+    // Dynamically collect values for all subjects
+    subjectsData.forEach(sub => {
+        const el = document.getElementById(`edit_sub_${sub.id}`);
+        if (el) {
+            row[sub.id] = el.value;
+        }
+    });
+
     saveState();
     renderAll();
     closeBottomSheet();
@@ -407,14 +486,26 @@ function deleteCurrentWeek() {
 }
 
 // ------------------------------------------------------------
-// Adding / Resetting / Import‑Export (same as previous version)
+// Adding / Resetting / Import‑Export
 function openAddWeek() {
     const last = scheduleData[scheduleData.length-1];
     const lastNum = last ? parseInt(last.week.replace('W','')) : 0;
     const nextWeek = 'W' + String(lastNum+1).padStart(2,'0');
-    scheduleData.push({ week:nextWeek, date:'', finance:'', tax:'', civics:'', chinese:'' });
-    // init completion for the new week
-    completionStatus[nextWeek] = { finance:false, tax:false, civics:false, chinese:false };
+    
+    // Create week item dynamically with empty fields for all subjectsData
+    const newWeekItem = { week: nextWeek, date: '' };
+    subjectsData.forEach(sub => {
+        newWeekItem[sub.id] = '';
+    });
+    
+    scheduleData.push(newWeekItem);
+    
+    // Init completion for the new week dynamically
+    completionStatus[nextWeek] = {};
+    subjectsData.forEach(sub => {
+        completionStatus[nextWeek][sub.id] = false;
+    });
+    
     saveState();
     renderAll();
     showToast(`已新增 ${nextWeek}`);
@@ -434,7 +525,7 @@ function confirmReset() {
 }
 
 function exportData() {
-    const data = { scheduleData, completionStatus, reflections };
+    const data = { subjectsData, scheduleData, completionStatus, reflections };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=`讀書規劃備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
@@ -452,15 +543,29 @@ function handleImport(e) {
     reader.onload = ev => {
         try {
             const data = JSON.parse(ev.target.result);
+            if (data.subjectsData) subjectsData = data.subjectsData;
             if (data.scheduleData) scheduleData = data.scheduleData;
             if (data.completionStatus) completionStatus = data.completionStatus;
             if (data.reflections) reflections = data.reflections;
+            
+            // Harmonize dynamic structures in case imported data has mismatches
+            for (const wk of scheduleData) {
+                if (!completionStatus[wk.week]) {
+                    completionStatus[wk.week] = {};
+                }
+                subjectsData.forEach(sub => {
+                    if (completionStatus[wk.week][sub.id] === undefined) {
+                        completionStatus[wk.week][sub.id] = false;
+                    }
+                });
+            }
+
             saveState();
             renderAll();
             showToast('匯入成功');
         } catch(err) {
             console.error(err);
-            showToast('匯入失敗，格式錯�誤');
+            showToast('匯入失敗，格式錯誤');
         }
     };
     reader.readAsText(file);
@@ -470,6 +575,7 @@ function handleImport(e) {
 // Note Tab (unchanged – still per week)
 function renderNotePicker() {
     const container = document.getElementById('weekPickerScroll');
+    if (!container) return;
     container.innerHTML = scheduleData.map(w=>`<div class="week-pill ${activeNoteWeek===w.week?'active':''}" onclick="switchNoteWeek('${w.week}')">${w.week}</div>`).join('');
     const act = container.querySelector('.active');
     if (act) act.scrollIntoView({behavior:'smooth',inline:'center'});
@@ -483,16 +589,24 @@ function switchNoteWeek(week) {
 
 function renderActiveNote() {
     const data = reflections[activeNoteWeek]||{};
-    document.getElementById('noteGoal').value = data.goal||'';
-    document.getElementById('noteHarvest').value = data.harvest||'';
-    document.getElementById('noteMessage').value = data.message||'';
+    const goalEl = document.getElementById('noteGoal');
+    const harvestEl = document.getElementById('noteHarvest');
+    const msgEl = document.getElementById('noteMessage');
+    
+    if (goalEl) goalEl.value = data.goal||'';
+    if (harvestEl) harvestEl.value = data.harvest||'';
+    if (msgEl) msgEl.value = data.message||'';
 }
 
 function saveActiveNote() {
+    const goalEl = document.getElementById('noteGoal');
+    const harvestEl = document.getElementById('noteHarvest');
+    const msgEl = document.getElementById('noteMessage');
+    
     reflections[activeNoteWeek] = {
-        goal: document.getElementById('noteGoal').value,
-        harvest: document.getElementById('noteHarvest').value,
-        message: document.getElementById('noteMessage').value
+        goal: goalEl ? goalEl.value : '',
+        harvest: harvestEl ? harvestEl.value : '',
+        message: msgEl ? msgEl.value : ''
     };
     saveState();
     showAutoSaveIndicator();
@@ -500,8 +614,10 @@ function saveActiveNote() {
 
 function showAutoSaveIndicator(){
     const el=document.getElementById('saveIndicator');
-    el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'),1500);
+    if (el) {
+        el.classList.add('show');
+        setTimeout(()=>el.classList.remove('show'),1500);
+    }
 }
 
 // ------------------------------------------------------------
@@ -515,7 +631,8 @@ function switchTab(tabId) {
     document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
     document.getElementById(`tab-${tabId}`).classList.add('active');
     // also ensure full-schedule subpage is hidden when switching away
-    document.getElementById('tab-home-full').classList.remove('active');
+    const homeFullEl = document.getElementById('tab-home-full');
+    if (homeFullEl) homeFullEl.classList.remove('active');
     // activate tab button style
     document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
     // when leaving subject detail, reset activeSubject
@@ -524,11 +641,58 @@ function switchTab(tabId) {
 }
 
 // ------------------------------------------------------------
+// Dynamic Subject Management Sheet
+function openSubjectSheet() {
+    const nameInput = document.getElementById('newSubjectName');
+    if (nameInput) nameInput.value = '';
+    document.getElementById('subjectSheetOverlay').classList.add('active');
+}
+
+function closeSubjectSheet() {
+    document.getElementById('subjectSheetOverlay').classList.remove('active');
+}
+
+const PALETTE = [
+    '#e8a87c', '#c38d9e', '#41b3a3', '#85dcba', '#e27d60',
+    '#4a90e2', '#50e3c2', '#b8e986', '#f5a623', '#f8e71c'
+];
+
+function addNewSubject() {
+    const nameInput = document.getElementById('newSubjectName');
+    const name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+        showToast('請輸入科目名稱');
+        return;
+    }
+
+    const newId = 'subject_' + Date.now();
+    let color = PALETTE[subjectsData.length % PALETTE.length];
+
+    // Add subject
+    subjectsData.push({ id: newId, name: name, color: color });
+
+    // Update schedules and completion
+    for (const wk of scheduleData) {
+        wk[newId] = '';
+        if (!completionStatus[wk.week]) {
+            completionStatus[wk.week] = {};
+        }
+        completionStatus[wk.week][newId] = false;
+    }
+
+    saveState();
+    renderAll();
+    closeSubjectSheet();
+    showToast(`已新增科目「${name}」`);
+}
+
+// ------------------------------------------------------------
 // Utility helpers
 function getCurrentWeekIndex(){
     const now = new Date();
     const year = now.getFullYear();
     for(let i=0;i<scheduleData.length;i++){
+        if (!scheduleData[i] || !scheduleData[i].date) continue;
         const m = scheduleData[i].date.match(/(\d{2})\/(\d{2})～(\d{2})\/(\d{2})/);
         if(!m) continue;
         const start = new Date(year, parseInt(m[1])-1, parseInt(m[2]));
@@ -554,9 +718,11 @@ function debounce(fn, wait){
 
 function showToast(msg){
     const el=document.getElementById('toast');
-    el.textContent=msg;
-    el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'),2500);
+    if (el) {
+        el.textContent=msg;
+        el.classList.add('show');
+        setTimeout(()=>el.classList.remove('show'),2500);
+    }
 }
 
 // ------------------------------------------------------------
@@ -573,4 +739,7 @@ window.switchNoteWeek = switchNoteWeek;
 window.openSubjectDetail = openSubjectDetail;
 window.backToSubjectList = backToSubjectList;
 window.switchScheduleSubTab = switchScheduleSubTab;
+window.openSubjectSheet = openSubjectSheet;
+window.closeSubjectSheet = closeSubjectSheet;
+window.addNewSubject = addNewSubject;
 // ------------------------------------------------------------

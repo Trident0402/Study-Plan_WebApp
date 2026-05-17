@@ -38,10 +38,10 @@ let currentWeekIdx = -1;
 
 let subjectsData = [];
 const DEFAULT_SUBJECTS = [
-    { id: 'finance', name: '財政學', color: '#d4a574' },
-    { id: 'tax', name: '稅務法規', color: '#a8c5a0' },
-    { id: 'civics', name: '公民', color: '#a0b8d4' },
-    { id: 'chinese', name: '國文', color: '#d4a0b8' }
+    { id: 'finance', name: '財政學', color: '#e3cbb3' },
+    { id: 'tax', name: '稅務法規', color: '#c6d4c1' },
+    { id: 'civics', name: '公民', color: '#c4d1df' },
+    { id: 'chinese', name: '國文', color: '#e3c4d1' }
 ];
 
 // ------------------------------------------------------------
@@ -653,8 +653,8 @@ function closeSubjectSheet() {
 }
 
 const PALETTE = [
-    '#e8a87c', '#c38d9e', '#41b3a3', '#85dcba', '#e27d60',
-    '#4a90e2', '#50e3c2', '#b8e986', '#f5a623', '#f8e71c'
+    '#e8c5be', '#e3cbb3', '#c6d4c1', '#c4d1df', '#e3c4d1',
+    '#d8a7a0', '#b5cba5', '#c99c93', '#e0a39a', '#9e8d87'
 ];
 
 function addNewSubject() {

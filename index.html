@@ -64,7 +64,7 @@
                 <div class="overall-progress-card" style="justify-content: center; padding: 20px;">
                     <div id="overallProgressText"
                         style="font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; text-align: center; width: 100%;">
-                        ♫ ⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ 𝟬٪ ﹞ ✦ *
+                        ⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ 𝟬٪ ﹞ ✦ *
                     </div>
                 </div>
                 <!-- 各科進度 -->
@@ -91,10 +91,12 @@
             <section id="tab-schedule" class="tab-page">
                 <!-- Sub-tab navigation -->
                 <div class="sub-tab-nav" id="scheduleSubTabNav">
-                    <button class="sub-tab-btn active" data-subtab="weekly" onclick="switchScheduleSubTab('weekly')">📅
-                        週進度</button>
-                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchScheduleSubTab('subjects')">📚
-                        各科目進度</button>
+                    <button class="sub-tab-btn active" data-subtab="weekly"
+                        onclick="switchScheduleSubTab('weekly')"><img src="schedule-tab-icon.png" alt="weekly"
+                            style="width: 32px; height: 32px; object-fit: contain; vertical-align: middle; margin-right: 4px;">週進度</button>
+                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchScheduleSubTab('subjects')"><img
+                            src="op-icon.png" alt="subjects"
+                            style="width: 32px; height: 32px; object-fit: contain; vertical-align: middle; margin-right: 4px;">各科目進度</button>
                 </div>
 
                 <!-- Sub-tab 1: Weekly Progress (moved from Home) -->
@@ -106,7 +108,7 @@
                     </div>
                     <div style="text-align:center; margin-bottom: 12px;">
                         <button onclick="openBottomSheet(currentWeekIdx)"
-                            style="padding: 6px 16px; border-radius: 20px; background: white; border: 1px solid var(--border-light); font-size: 0.85rem; color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">✏️
+                            style="padding: 6px 16px; border-radius: 20px; background: white; border: 1px solid var(--border-light); font-size: 0.85rem; color: var(--primary); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><img src="edit-icon.png" alt="edit" style="width: 14px; height: 14px; object-fit: contain;">
                             編輯此週內容</button>
                     </div>
                     <div class="subject-overview-grid" id="weeklySubjectCards">
@@ -141,22 +143,22 @@
                 <div class="settings-group">
                     <h3 class="settings-title">科目與排程管理</h3>
                     <div class="settings-list">
-                        <button class="settings-item" onclick="openAddWeek()"><span class="item-icon">➕</span><span
+                        <button class="settings-item" onclick="openAddWeek()"><span class="item-icon" style="display: flex; align-items: center;"><img src="add-icon.png" alt="add" style="width: 20px; height: 20px; object-fit: contain;"></span><span
                                 class="item-text">新增一週排程</span><span class="item-arrow">›</span></button>
                         <button class="settings-item" onclick="openSubjectSheet()"><span
-                                class="item-icon">📚</span><span class="item-text">新增科目管理</span><span
+                                class="item-icon" style="display: flex; align-items: center;"><img src="subjects-icon.png" alt="subjects" style="width: 20px; height: 20px; object-fit: contain;"></span><span class="item-text">新增科目管理</span><span
                                 class="item-arrow">›</span></button>
                         <button class="settings-item danger" onclick="confirmReset()"><span
-                                class="item-icon">🔄</span><span class="item-text">重置所有資料</span><span
+                                class="item-icon" style="display: flex; align-items: center;"><img src="reset-icon.png" alt="reset" style="width: 20px; height: 20px; object-fit: contain;"></span><span class="item-text">重置所有資料</span><span
                                 class="item-arrow">›</span></button>
                     </div>
                 </div>
                 <div class="settings-group">
                     <h3 class="settings-title">資料備份</h3>
                     <div class="settings-list">
-                        <button class="settings-item" onclick="exportData()"><span class="item-icon">📤</span><span
+                        <button class="settings-item" onclick="exportData()"><span class="item-icon" style="display: flex; align-items: center;"><img src="export-icon.png" alt="export" style="width: 20px; height: 20px; object-fit: contain;"></span><span
                                 class="item-text">匯出備份 (JSON)</span><span class="item-arrow">›</span></button>
-                        <button class="settings-item" onclick="importData()"><span class="item-icon">📥</span><span
+                        <button class="settings-item" onclick="importData()"><span class="item-icon" style="display: flex; align-items: center;"><img src="import-icon.png" alt="import" style="width: 20px; height: 20px; object-fit: contain;"></span><span
                                 class="item-text">匯入資料</span><span class="item-arrow">›</span></button>
                     </div>
                 </div>
@@ -165,15 +167,60 @@
                     <p>每一天的努力都在累積實力 </p>
                 </div>
             </section>
+
+            <!-- Tab 3 – 成績 (Exams) -->
+            <section id="tab-exams" class="tab-page" style="position: relative; min-height: 100%;">
+                <!-- Sub-tab navigation -->
+                <div class="sub-tab-nav" id="examsSubTabNav">
+                    <button class="sub-tab-btn active" data-subtab="all" onclick="switchExamsSubTab('all')">
+                        全部測驗
+                    </button>
+                    <button class="sub-tab-btn" data-subtab="subjects" onclick="switchExamsSubTab('subjects')">
+                        分科成績
+                    </button>
+                </div>
+
+                <!-- Sub-tab 1: All Exams -->
+                <div id="examsAll" class="sub-tab-content active">
+                    <div id="examsListContainer"
+                        style="display:flex; flex-direction:column; gap:16px; padding-bottom: 80px;">
+                        <!-- Exams will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Sub-tab 2: By-subject Exams -->
+                <div id="examsSubjects" class="sub-tab-content">
+                    <div id="examsSubjectListContainer" class="subject-list" style="padding-bottom: 80px;">
+                        <!-- Subject list cards injected by JS -->
+                    </div>
+                    <div id="examsSubjectDetailContainer" class="subject-detail hidden" style="padding-bottom: 80px;">
+                        <button class="back-btn" id="backToExamsSubjectsBtn" onclick="backToExamsSubjectList()">←
+                            返回科目列表</button>
+                        <h2 class="subject-detail-title" id="examsSubjectDetailTitle">科目成績</h2>
+                        <div id="examsSubjectDetailScores" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Subject exam details list -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Action Button (FAB) for adding exam -->
+                <button id="addExamFab" onclick="openExamSheet()"
+                    style="position: fixed; bottom: calc(var(--tab-height) + env(safe-area-inset-bottom) + 20px); right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary-dark); border: none; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(201,156,147,0.4); z-index: 99; cursor: pointer; transition: var(--transition);">
+                    <img src="add-icon.png" alt="add" style="width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(1);">
+                </button>
+            </section>
+
         </main>
         <!-- Bottom Tab Bar -->
         <nav class="tab-bar">
             <button class="tab-item active" data-tab="home"><img src="home-icon.png" alt="home" class="tab-icon"
                     style="width: 24px; height: 24px; object-fit: contain;"><span class="tab-label">總覽</span></button>
-            <button class="tab-item" data-tab="schedule"><span class="tab-icon">📋</span><span
+            <button class="tab-item" data-tab="schedule"><img src="schedule-tab-icon.png" alt="schedule"
+                    class="tab-icon" style="width: 24px; height: 24px; object-fit: contain;"><span
                     class="tab-label">科目</span></button>
-
-            <button class="tab-item" data-tab="settings"><span class="tab-icon">⚙️</span><span
+            <button class="tab-item" data-tab="exams"><img src="exams-tab-icon.png" alt="exams" class="tab-icon" style="width: 24px; height: 24px; object-fit: contain;"><span
+                    class="tab-label">成績</span></button>
+            <button class="tab-item" data-tab="settings"><img src="settings-tab-icon.png" alt="settings" class="tab-icon" style="width: 24px; height: 24px; object-fit: contain;"><span
                     class="tab-label">設定</span></button>
         </nav>
     </div>
@@ -207,6 +254,59 @@
                 <div style="margin-top: 24px;">
                     <button class="btn-delete" id="addSubjectConfirmBtn"
                         style="width:100%; background:var(--primary-dark); color:white; border:none; border-radius:12px; padding:12px; font-weight:700; cursor:pointer;">確認新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet (Add/Edit Exam) -->
+    <div class="bottom-sheet-overlay" id="examSheetOverlay">
+        <div class="bottom-sheet" id="examSheet" style="max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <h2 id="examSheetTitle">新增成績</h2><button class="sheet-close" onclick="saveExam()">儲存</button>
+            </div>
+            <div class="sheet-content" style="flex: 1; overflow-y: auto; padding-bottom: 24px;">
+                <div class="input-group">
+                    <label>測驗日期</label>
+                    <input type="date" id="examDate">
+                </div>
+                <div class="input-group">
+                    <label>考試名稱</label>
+                    <input type="text" id="examName" list="examNameList" placeholder="選擇或輸入考試名稱">
+                    <datalist id="examNameList">
+                        <option value="地方特考五等"></option>
+                        <option value="鐵路特考佐級"></option>
+                        <option value="司法特考五等"></option>
+                        <option value="初考"></option>
+                        <option value="模擬試題"></option>
+                    </datalist>
+                </div>
+
+                <div class="input-group"
+                    style="background: rgba(255,255,255,0.4); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.6);">
+                    <label style="font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; display: inline-flex; align-items: center; gap: 4px;"><img src="add-icon.png" alt="add" style="width: 16px; height: 16px; object-fit: contain;"> 新增科目成績</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <select id="examSubjectSelect"
+                            style="flex: 1.5; background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 10px; font-family: inherit; font-size: 0.9rem; color: var(--text);">
+                            <!-- Dynamic subject options injected by JS -->
+                        </select>
+                        <input type="number" id="examSubjectScore" step="0.1" min="0" max="100" placeholder="分數"
+                            style="flex: 1; padding: 10px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); background: white; text-align: center;">
+                        <button type="button" onclick="addSubjectScoreToTemp()"
+                            style="padding: 10px 16px; border-radius: 12px; background: var(--primary-dark); color: white; border: none; font-weight: 700; cursor: pointer; transition: var(--transition);">新增</button>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 16px;">
+                    <label style="font-weight: 700;">已選科目成績</label>
+                    <div id="addedScoresList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <!-- Selected scores injected by JS -->
+                    </div>
+                </div>
+
+                <div class="sheet-actions" id="examSheetActions" style="margin-top: 24px; display: none;">
+                    <button class="btn-delete" onclick="deleteExam()">刪除此紀錄</button>
                 </div>
             </div>
         </div>

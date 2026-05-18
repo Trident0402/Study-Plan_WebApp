@@ -31,6 +31,8 @@ let completionStatus = {}; // { "W01": { finance:true, tax:false, civics:false, 
 let activeTab = 'home';
 let activeSubject = null; // when inside subject detail view
 let activeScheduleSubTab = 'weekly'; // 'weekly' or 'subjects'
+let activeExamsSubTab = 'all'; // 'all' or 'subjects'
+let activeExamsSubject = null; // when inside exam subject detail view
 let editingRowIndex = -1;
 let currentWeekIdx = -1;
 
@@ -41,6 +43,15 @@ const DEFAULT_SUBJECTS = [
     { id: 'civics', name: '公民', color: '#c4d1df' },
     { id: 'chinese', name: '國文', color: '#e3c4d1' }
 ];
+
+let examsData = [];
+const EXAM_TARGETS = {
+    chinese: 90,
+    finance: 85,
+    tax: 85,
+    civics: 80
+};
+let editingExamId = null;
 
 // ------------------------------------------------------------
 // Init
@@ -64,6 +75,9 @@ function loadState() {
 
         const savedSchedule = localStorage.getItem('studyPlan_schedule');
         scheduleData = savedSchedule ? JSON.parse(savedSchedule) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+
+        const savedExams = localStorage.getItem('studyPlan_exams');
+        examsData = savedExams ? JSON.parse(savedExams) : [];
 
         // Load completion – may be old format (boolean) or new object
         const savedComp = localStorage.getItem('studyPlan_completion');
@@ -112,6 +126,7 @@ function loadState() {
                 completionStatus[wk.week][sub.id] = false;
             });
         }
+        examsData = [];
     }
 }
 
@@ -119,6 +134,7 @@ function saveState() {
     localStorage.setItem('studyPlan_subjects', JSON.stringify(subjectsData));
     localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
     localStorage.setItem('studyPlan_completion', JSON.stringify(completionStatus));
+    localStorage.setItem('studyPlan_exams', JSON.stringify(examsData));
 }
 
 // ------------------------------------------------------------
@@ -141,6 +157,9 @@ function initEventListeners() {
     document.getElementById('subjectSheetOverlay').addEventListener('click', e => {
         if (e.target.id === 'subjectSheetOverlay') closeSubjectSheet();
     });
+    document.getElementById('examSheetOverlay').addEventListener('click', e => {
+        if (e.target.id === 'examSheetOverlay') closeExamSheet();
+    });
     document.getElementById('closeSheet').addEventListener('click', saveEditFromSheet);
     document.getElementById('deleteWeekBtn').addEventListener('click', deleteCurrentWeek);
     document.getElementById('addSubjectConfirmBtn').addEventListener('click', addNewSubject);
@@ -154,11 +173,13 @@ function renderAll() {
     // Header week pill reflects current week
     document.getElementById('currentWeekPill').textContent = scheduleData[currentWeekIdx].week;
     // Update page title (depends on active tab)
-    const titles = { home: '總覽', schedule: '科目', settings: '設定' };
+    const titles = { home: '總覽', schedule: '科目', exams: '成績', settings: '設定' };
     document.getElementById('pageTitle').textContent = titles[activeTab];
     // Render each tab according to activeTab
     if (activeTab === 'schedule') {
         renderScheduleTab();
+    } else if (activeTab === 'exams') {
+        renderExamsTab();
     }
     // progress bars and full schedule – always update
     updateOverallProgress();
@@ -395,12 +416,390 @@ function updateOverallProgress() {
             '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
         };
         const stylizedNum = String(percentage).split('').map(d => digits[d] || d).join('');
-        txt.textContent = `♫ ⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ ${stylizedNum}٪ ﹞ ✦ *`;
+        txt.textContent = `⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ ${stylizedNum}٪ ﹞ ✦ *`;
     }
 }
 
 function updateHeaderStatus() {
     // show current week pill (already set in renderAll via currentWeekIdx)
+}
+
+// ------------------------------------------------------------
+// Exams / Scores Management
+function renderExamsTab() {
+    // Show/hide sub-tab content
+    document.getElementById('examsAll').classList.toggle('active', activeExamsSubTab === 'all');
+    document.getElementById('examsSubjects').classList.toggle('active', activeExamsSubTab === 'subjects');
+    
+    // Update sub-tab button styles inside examsSubTabNav
+    const subTabNav = document.getElementById('examsSubTabNav');
+    if (subTabNav) {
+        subTabNav.querySelectorAll('.sub-tab-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.subtab === activeExamsSubTab);
+        });
+    }
+
+    // Render active sub-tab content
+    if (activeExamsSubTab === 'all') {
+        renderAllExamsList();
+    } else if (activeExamsSubTab === 'subjects') {
+        renderExamsSubjectsView();
+    }
+}
+
+function switchExamsSubTab(subtab) {
+    activeExamsSubTab = subtab;
+    activeExamsSubject = null; // reset subject detail view when switching
+    renderExamsTab();
+}
+
+function renderAllExamsList() {
+    const container = document.getElementById('examsListContainer');
+    if (!container) return;
+
+    if (examsData.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:var(--text-secondary); padding: 40px 20px;">尚無測驗紀錄，點擊右下角按鈕新增！</div>';
+        return;
+    }
+
+    const sortedExams = [...examsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    container.innerHTML = sortedExams.map(exam => {
+        const scoresHtml = subjectsData.map(sub => {
+            const scoreStr = exam.scores[sub.id];
+            if (!scoreStr || scoreStr.trim() === '') return '';
+            
+            const score = parseFloat(scoreStr);
+            const target = EXAM_TARGETS[sub.id];
+            
+            let statusClass = '';
+            let targetHtml = '';
+            
+            if (target !== undefined) {
+                if (score >= target) {
+                    statusClass = 'score-success';
+                } else {
+                    statusClass = 'score-danger';
+                }
+                targetHtml = `<div class="exam-score-target" style="display: inline-flex; align-items: center; gap: 2px;"><img src="target-icon.png" alt="target" style="width: 12px; height: 12px; object-fit: contain;"> 目標: ${target}分</div>`;
+            }
+
+            return `
+                <div class="exam-score-item ${statusClass}" style="border-left-color: ${sub.color}">
+                    <div class="exam-score-sub">${sub.name}</div>
+                    <div class="exam-score-val">${score} 分</div>
+                    ${targetHtml}
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="exam-card" onclick="openExamSheet('${exam.id}')">
+                <div class="exam-card-header">
+                    <span class="exam-card-title">${escapeHtml(exam.name)}</span>
+                    <span class="exam-card-date">${exam.date}</span>
+                </div>
+                <div class="exam-scores-grid">
+                    ${scoresHtml || '<div style="color:var(--text-secondary); font-size: 0.85rem;">未填寫各科分數</div>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderExamsSubjectsView() {
+    const listContainer = document.getElementById('examsSubjectListContainer');
+    const detailContainer = document.getElementById('examsSubjectDetailContainer');
+    if (!listContainer || !detailContainer) return;
+
+    if (activeExamsSubject) {
+        listContainer.classList.add('hidden');
+        detailContainer.classList.remove('hidden');
+        renderExamsSubjectDetail(activeExamsSubject);
+        return;
+    }
+
+    listContainer.classList.remove('hidden');
+    detailContainer.classList.add('hidden');
+
+    listContainer.innerHTML = subjectsData.map(sub => {
+        const key = sub.id;
+        
+        let totalScore = 0;
+        let examCount = 0;
+        
+        examsData.forEach(exam => {
+            const scoreStr = exam.scores[key];
+            if (scoreStr && scoreStr.trim() !== '') {
+                const s = parseFloat(scoreStr);
+                if (!isNaN(s)) {
+                    totalScore += s;
+                    examCount++;
+                }
+            }
+        });
+
+        const avgScore = examCount > 0 ? (totalScore / examCount).toFixed(1) : null;
+        const target = EXAM_TARGETS[key];
+        
+        let avgHtml = '';
+        if (examCount > 0) {
+            let statusStyle = '';
+            if (target !== undefined) {
+                statusStyle = parseFloat(avgScore) >= target ? 'color: #5c7a4d; font-weight: 700;' : 'color: #a8564b; font-weight: 700;';
+            }
+            avgHtml = `<span style="font-size: 0.9rem; ${statusStyle}">平均: ${avgScore}分</span>`;
+        } else {
+            avgHtml = '<span style="font-size: 0.85rem; color: var(--text-secondary);">尚未有測驗</span>';
+        }
+
+        return `
+            <div class="subject-list-card" onclick="openExamsSubjectDetail('${key}')" style="border-left: 4px solid ${sub.color}; display: flex; flex-direction: column; gap: 8px;">
+                <div class="subject-list-header" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                    <span class="subject-list-title" style="font-weight: 700;">${sub.name}</span>
+                    <span class="subject-list-count" style="font-size: 0.8rem; background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: 12px;">已測 ${examCount} 次</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                    ${avgHtml}
+                    ${target !== undefined ? `<span style="font-size: 0.75rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 2px;"><img src="target-icon.png" alt="target" style="width: 12px; height: 12px; object-fit: contain;"> 目標: ${target}分</span>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function openExamsSubjectDetail(key) {
+    activeExamsSubject = key;
+    renderExamsTab();
+}
+
+function backToExamsSubjectList() {
+    activeExamsSubject = null;
+    renderExamsTab();
+}
+
+function renderExamsSubjectDetail(subjectKey) {
+    const subObj = subjectsData.find(s => s.id === subjectKey);
+    if (!subObj) return;
+
+    document.getElementById('examsSubjectDetailTitle').textContent = `${subObj.name} - 歷史成績`;
+
+    const detailScoresContainer = document.getElementById('examsSubjectDetailScores');
+    if (!detailScoresContainer) return;
+
+    const filteredExams = examsData
+        .filter(exam => exam.scores[subjectKey] !== undefined && exam.scores[subjectKey].trim() !== '')
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (filteredExams.length === 0) {
+        detailScoresContainer.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding: 40px 20px;">此科目尚無成績紀錄</div>';
+        return;
+    }
+
+    const target = EXAM_TARGETS[subjectKey];
+
+    detailScoresContainer.innerHTML = filteredExams.map(exam => {
+        const score = parseFloat(exam.scores[subjectKey]);
+        
+        let statusClass = '';
+        let targetHtml = '';
+        
+        if (target !== undefined) {
+            if (score >= target) {
+                statusClass = 'score-success';
+            } else {
+                statusClass = 'score-danger';
+            }
+            targetHtml = `<div class="exam-score-target" style="display: inline-flex; align-items: center; gap: 2px;"><img src="target-icon.png" alt="target" style="width: 12px; height: 12px; object-fit: contain;"> 目標: ${target}分</div>`;
+        }
+
+        return `
+            <div class="exam-score-item ${statusClass}" onclick="openExamSheet('${exam.id}')" style="border-left: 4px solid ${subObj.color}; padding: 12px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.75); border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; transition: var(--transition);">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="font-weight: 700; color: var(--text); font-size: 1rem;">${escapeHtml(exam.name)}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">${exam.date}</div>
+                </div>
+                <div style="text-align: right; display: flex; flex-direction: column; gap: 2px;">
+                    <div style="font-size: 1.25rem; font-weight: 800; color: var(--text);">${score} 分</div>
+                    ${targetHtml}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+let tempExamScores = {}; // Key: subjectId, Value: string (score)
+
+function openExamSheet(id = null) {
+    editingExamId = id;
+    const titleEl = document.getElementById('examSheetTitle');
+    const dateEl = document.getElementById('examDate');
+    const nameEl = document.getElementById('examName');
+    const actionsEl = document.getElementById('examSheetActions');
+    
+    // Reset temp inputs
+    const scoreInput = document.getElementById('examSubjectScore');
+    if (scoreInput) scoreInput.value = '';
+    
+    if (id) {
+        const exam = examsData.find(e => e.id === id);
+        if (!exam) return;
+        titleEl.textContent = '編輯測驗成績';
+        dateEl.value = exam.date || '';
+        nameEl.value = exam.name || '';
+        actionsEl.style.display = 'block';
+        
+        tempExamScores = { ...exam.scores };
+    } else {
+        titleEl.textContent = '新增測驗成績';
+        dateEl.value = new Date().toISOString().slice(0, 10);
+        nameEl.value = '';
+        actionsEl.style.display = 'none';
+        
+        tempExamScores = {};
+    }
+
+    renderExamSubjectSelect();
+    renderTempScoresList();
+    document.getElementById('examSheetOverlay').classList.add('active');
+}
+
+function renderExamSubjectSelect() {
+    const selectEl = document.getElementById('examSubjectSelect');
+    if (!selectEl) return;
+    
+    const availableSubjects = subjectsData.filter(sub => tempExamScores[sub.id] === undefined);
+    
+    if (availableSubjects.length === 0) {
+        selectEl.innerHTML = '<option value="">(無可用科目)</option>';
+    } else {
+        selectEl.innerHTML = availableSubjects.map(sub => `
+            <option value="${sub.id}">${sub.name}</option>
+        `).join('');
+    }
+}
+
+function renderTempScoresList() {
+    const container = document.getElementById('addedScoresList');
+    if (!container) return;
+    
+    const keys = Object.keys(tempExamScores);
+    if (keys.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 12px;">尚無填寫科目成績</div>';
+        return;
+    }
+    
+    container.innerHTML = keys.map(subId => {
+        const sub = subjectsData.find(s => s.id === subId) || { name: '未知科目', color: '#ccc' };
+        const score = tempExamScores[subId];
+        return `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); padding: 8px 12px; border-radius: 12px; border-left: 4px solid ${sub.color}; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text);">${sub.name}</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="number" step="0.1" min="0" max="100" value="${score}" oninput="updateTempScore('${subId}', this.value)" style="width: 80px; padding: 6px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); background: white; text-align: center; font-family: inherit; font-size: 0.9rem;">
+                    <button type="button" onclick="removeTempScore('${subId}')" style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center;"><img src="trash-icon.png" alt="delete" style="width: 18px; height: 18px; object-fit: contain;"></button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function addSubjectScoreToTemp() {
+    const selectEl = document.getElementById('examSubjectSelect');
+    const scoreEl = document.getElementById('examSubjectScore');
+    if (!selectEl || !scoreEl) return;
+    
+    const subId = selectEl.value;
+    const scoreVal = scoreEl.value.trim();
+    
+    if (!subId) {
+        showToast('請先選擇科目');
+        return;
+    }
+    if (scoreVal === '') {
+        showToast('請輸入分數');
+        return;
+    }
+    
+    const floatScore = parseFloat(scoreVal);
+    if (isNaN(floatScore) || floatScore < 0 || floatScore > 100) {
+        showToast('分數格式錯誤 (0 ~ 100)');
+        return;
+    }
+    
+    const finalScore = parseFloat(floatScore.toFixed(1));
+    tempExamScores[subId] = String(finalScore);
+    
+    scoreEl.value = '';
+    renderExamSubjectSelect();
+    renderTempScoresList();
+}
+
+function updateTempScore(subId, val) {
+    const floatVal = parseFloat(val);
+    if (!isNaN(floatVal)) {
+        tempExamScores[subId] = String(parseFloat(floatVal.toFixed(1)));
+    } else {
+        tempExamScores[subId] = '';
+    }
+}
+
+function removeTempScore(subId) {
+    delete tempExamScores[subId];
+    renderExamSubjectSelect();
+    renderTempScoresList();
+}
+
+function closeExamSheet() {
+    document.getElementById('examSheetOverlay').classList.remove('active');
+    editingExamId = null;
+}
+
+function saveExam() {
+    const date = document.getElementById('examDate').value;
+    const name = document.getElementById('examName').value.trim() || '未命名測驗';
+    
+    const finalScores = {};
+    for (const subId in tempExamScores) {
+        const val = tempExamScores[subId].trim();
+        if (val !== '') {
+            finalScores[subId] = val;
+        }
+    }
+
+    if (editingExamId) {
+        const exam = examsData.find(e => e.id === editingExamId);
+        if (exam) {
+            exam.date = date;
+            exam.name = name;
+            exam.scores = finalScores;
+            showToast('已更新成績');
+        }
+    } else {
+        const newExam = {
+            id: 'exam_' + Date.now(),
+            date: date,
+            name: name,
+            scores: finalScores
+        };
+        examsData.push(newExam);
+        showToast('已新增成績');
+    }
+
+    saveState();
+    if (activeTab === 'exams') renderExamsTab();
+    closeExamSheet();
+}
+
+function deleteExam() {
+    if (!editingExamId) return;
+    if (!confirm('確定要刪除這筆成績紀錄嗎？')) return;
+    
+    examsData = examsData.filter(e => e.id !== editingExamId);
+    saveState();
+    if (activeTab === 'exams') renderExamsTab();
+    closeExamSheet();
+    showToast('已刪除成績');
 }
 
 // ------------------------------------------------------------
@@ -510,7 +909,7 @@ function confirmReset() {
 }
 
 function exportData() {
-    const data = { subjectsData, scheduleData, completionStatus };
+    const data = { subjectsData, scheduleData, completionStatus, examsData };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download=`讀書規劃備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
@@ -531,6 +930,7 @@ function handleImport(e) {
             if (data.subjectsData) subjectsData = data.subjectsData;
             if (data.scheduleData) scheduleData = data.scheduleData;
             if (data.completionStatus) completionStatus = data.completionStatus;
+            if (data.examsData) examsData = data.examsData;
             
             // Harmonize dynamic structures in case imported data has mismatches
             for (const wk of scheduleData) {
@@ -562,7 +962,7 @@ function handleImport(e) {
 function switchTab(tabId) {
     activeTab = tabId;
     // header title
-    const titles={home:'總覽',schedule:'科目',settings:'設定'};
+    const titles={home:'總覽',schedule:'科目',exams:'成績',settings:'設定'};
     document.getElementById('pageTitle').textContent = titles[tabId];
     // hide all tab pages, then show the selected one
     document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
@@ -574,6 +974,7 @@ function switchTab(tabId) {
     document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
     // when leaving subject detail, reset activeSubject
     if (tabId !== 'schedule') activeSubject = null;
+    if (tabId !== 'exams') activeExamsSubject = null;
     renderAll();
 }
 
@@ -678,4 +1079,15 @@ window.switchScheduleSubTab = switchScheduleSubTab;
 window.openSubjectSheet = openSubjectSheet;
 window.closeSubjectSheet = closeSubjectSheet;
 window.addNewSubject = addNewSubject;
+
+window.openExamSheet = openExamSheet;
+window.closeExamSheet = closeExamSheet;
+window.saveExam = saveExam;
+window.deleteExam = deleteExam;
+window.addSubjectScoreToTemp = addSubjectScoreToTemp;
+window.updateTempScore = updateTempScore;
+window.removeTempScore = removeTempScore;
+window.switchExamsSubTab = switchExamsSubTab;
+window.openExamsSubjectDetail = openExamsSubjectDetail;
+window.backToExamsSubjectList = backToExamsSubjectList;
 // ------------------------------------------------------------

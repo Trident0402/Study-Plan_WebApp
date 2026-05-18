@@ -4,24 +4,24 @@
 const DEFAULT_SCHEDULE = [
     { week: "W01", date: "05/04～05/10", finance: "Ch2、Ch5", tax: "", civics: "", chinese: "第一章" },
     { week: "W02", date: "05/11～05/17", finance: "Ch6、Ch7", tax: "", civics: "", chinese: "第二章（壹）" },
-    { week: "W03", date: "05/18～05/24", finance: "Ch1", tax: "Chapter 1 租稅基本概念、\nChapter 2 租稅法意義與原則、附錄）", civics: "壹：1－2", chinese: "第二章（貳、參、肆）" },
-    { week: "W04", date: "05/25～05/31", finance: "Ch3", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：3－4", chinese: "第二章（伍、陸、柒）" },
-    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：5－6", chinese: "第二章（柒、捌、玖）" },
-    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（附錄）", civics: "壹：7－8", chinese: "第二章（拾、拾壹）" },
-    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 4 營利事業所得稅（主文）", civics: "壹：9 貳：1", chinese: "第二章（拾貳、拾參）" },
-    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "貳：2－3", chinese: "第二章（拾肆、拾伍、拾陸）" },
-    { week: "W09", date: "06/29～07/05", finance: "Ch11", tax: "Chapter 6 所得稅的稽徵", civics: "貳：4－5", chinese: "第三章（壹、貳）" },
-    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "貳：6 參：1", chinese: "第三章（參、肆）" },
-    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：2－3", chinese: "第三章（伍、陸、柒）" },
-    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 10 土地稅", civics: "參：4－5", chinese: "第三章（捌、玖）" },
-    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "參：6－7", chinese: "第三章（拾、拾壹）" },
-    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "參：8－9", chinese: "第四章" },
-    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "參：10－11", chinese: "第五章（壹至肆）" },
-    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：1－2", chinese: "第五章（伍至捌）" },
-    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "第五章（玖、拾）、第六章" },
+    { week: "W03", date: "05/18～05/24", finance: "Ch1", tax: "Chapter 1 租稅基本概念、\nChapter 2 租稅法意義與原則、附錄）", civics: "壹：1－2", chinese: "114初考、115初考" },
+    { week: "W04", date: "05/25～05/31", finance: "Ch3", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：3－4", chinese: "113初考、112初考" },
+    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：5－6", chinese: "112地方特考五等" },
+    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（附錄）", civics: "壹：7－8", chinese: "114司法特考五等" },
+    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 4 營利事業所得稅（主文）", civics: "壹：9 貳：1", chinese: "113司法特考五等）" },
+    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "貳：2－3", chinese: "112司法特考五等）" },
+    { week: "W09", date: "06/29～07/05", finance: "Ch11", tax: "Chapter 6 所得稅的稽徵", civics: "貳：4－5", chinese: "112鐵路特考佐級" },
+    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "貳：6 參：1", chinese: "113身心障礙人員特考五等" },
+    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：2－3", chinese: "113 原住民族特考五等" },
+    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 10 土地稅", civics: "參：4－5", chinese: "114 原住民族特考五等" },
+    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "參：6－7", chinese: "）" },
+    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "參：8－9", chinese: "" },
+    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "參：10－11", chinese: "" },
+    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：1－2", chinese: "" },
+    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "" },
     { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 18 信託稅制", civics: "肆：5－6", chinese: "第六章" },
-    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "第七章（壹至柒）" },
-    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "第八章、第九章" }
+    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "）" },
+    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "" }
 ];
 
 // ------------------------------------------------------------
@@ -38,10 +38,10 @@ let currentWeekIdx = -1;
 
 let subjectsData = [];
 const DEFAULT_SUBJECTS = [
-    { id: 'finance', name: '財政學', color: '#e3cbb3' },
-    { id: 'tax', name: '稅務法規', color: '#c6d4c1' },
-    { id: 'civics', name: '公民', color: '#c4d1df' },
-    { id: 'chinese', name: '國文', color: '#e3c4d1' }
+    { id: 'finance', name: '財政學', color: '#ebdcd0' },
+    { id: 'tax', name: '稅務法規', color: '#c3d6cb' },
+    { id: 'civics', name: '公民', color: '#bcd0df' },
+    { id: 'chinese', name: '國文', color: '#e0cad3' }
 ];
 
 let examsData = [];
@@ -58,13 +58,24 @@ let editingExamId = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadState();
     initEventListeners();
+    initExamYearSelect(); // Populate year select dynamically from 116 to 80
     // set current week index based on today
     currentWeekIdx = getCurrentWeekIndex();
     if (currentWeekIdx === -1) currentWeekIdx = 0; // fallback to first week
-    
+
     // initial render
     renderAll();
 });
+
+function initExamYearSelect() {
+    const yearEl = document.getElementById('examYear');
+    if (!yearEl) return;
+    let html = '<option value="">無年份</option>';
+    for (let y = 116; y >= 80; y--) {
+        html += `<option value="${y}年">${y}年</option>`;
+    }
+    yearEl.innerHTML = html;
+}
 
 // ------------------------------------------------------------
 // Load / Save (with backward compatibility)
@@ -250,18 +261,18 @@ function toggleSubject(week, subjectKey) {
 }
 
 // --------------------- Global Progress Rendering ---------------------
-function calcGlobalProgress(){
+function calcGlobalProgress() {
     const totals = {};
-    const dones  = {};
+    const dones = {};
     subjectsData.forEach(sub => {
         totals[sub.id] = 0;
         dones[sub.id] = 0;
     });
 
-    scheduleData.forEach(w=>{
-        subjectsData.forEach(sub=>{
+    scheduleData.forEach(w => {
+        subjectsData.forEach(sub => {
             const k = sub.id;
-            if (w[k] && w[k].trim()){
+            if (w[k] && w[k].trim()) {
                 totals[k]++;
                 if (completionStatus[w.week] && completionStatus[w.week][k]) dones[k]++;
             }
@@ -270,17 +281,17 @@ function calcGlobalProgress(){
     const perc = {};
     subjectsData.forEach(sub => {
         const k = sub.id;
-        perc[k] = totals[k] ? dones[k]/totals[k] : 0;
+        perc[k] = totals[k] ? dones[k] / totals[k] : 0;
     });
-    return {perc, totals, dones};
+    return { perc, totals, dones };
 }
 
-function renderGlobalProgress(){
-    const {perc, totals, dones} = calcGlobalProgress();
+function renderGlobalProgress() {
+    const { perc, totals, dones } = calcGlobalProgress();
     const container = document.getElementById('globalProgressGrid');
-    const html = subjectsData.map(sub=>{
+    const html = subjectsData.map(sub => {
         const k = sub.id;
-        const percent = Math.round(perc[k]*100);
+        const percent = Math.round(perc[k] * 100);
         const countText = `${dones[k] || 0} / ${totals[k] || 0}`;
         return `
         <div class="global-progress-item" data-subject="${k}" style="--subject:${sub.color};">
@@ -309,30 +320,30 @@ function renderSubjectList() {
     detailContainer.classList.add('hidden');
     listContainer.innerHTML = subjectsData.map(sub => {
         const key = sub.id;
-        const total = scheduleData.filter(w=> w[key] && w[key].trim()).length;
-        const done = scheduleData.filter(w=> completionStatus[w.week] && completionStatus[w.week][key]).length;
-        const ratio = total===0?0:done/total;
+        const total = scheduleData.filter(w => w[key] && w[key].trim()).length;
+        const done = scheduleData.filter(w => completionStatus[w.week] && completionStatus[w.week][key]).length;
+        const ratio = total === 0 ? 0 : done / total;
         return `
             <div class="subject-list-card" onclick="openSubjectDetail('${key}')" style="border-left: 4px solid ${sub.color};">
                 <div class="subject-list-header">
                     <span class="subject-list-title">${sub.name}</span>
                     <span class="subject-list-count">${done}/${total}</span>
                 </div>
-                <div class="subject-list-progress"><div class="progress-bar" style="width:${ratio*100}%; background: ${sub.color};"></div></div>
+                <div class="subject-list-progress"><div class="progress-bar" style="width:${ratio * 100}%; background: ${sub.color};"></div></div>
             </div>
         `;
     }).join('');
 }
 
 // --------------------- Full Schedule Subpage ---------------------
-function renderFullSchedule(){
+function renderFullSchedule() {
     const container = document.getElementById('fullScheduleContainer');
     if (!container) return; // Prevent error if not on home tab and element is missing
-    
+
     let headerCols = subjectsData.map(sub => `<th>${sub.name}</th>`).join('');
     let html = `<table class="full-schedule-table"><thead><tr><th>週次</th><th>日期</th>${headerCols}</tr></thead><tbody>`;
-    
-    scheduleData.forEach(w=>{
+
+    scheduleData.forEach(w => {
         let rowCells = subjectsData.map(sub => {
             const isComp = completionStatus[w.week] && completionStatus[w.week][sub.id];
             const compClass = isComp ? ' class="completed-cell"' : '';
@@ -365,21 +376,21 @@ function renderSubjectDetail(subjectKey) {
 
     document.getElementById('subjectDetailTitle').textContent = subObj.name;
     // progress bar for this subject
-    const total = scheduleData.filter(w=> w[subjectKey] && w[subjectKey].trim()).length;
-    const done = scheduleData.filter(w=> completionStatus[w.week] && completionStatus[w.week][subjectKey]).length;
-    const ratio = total===0?0:done/total;
-    
+    const total = scheduleData.filter(w => w[subjectKey] && w[subjectKey].trim()).length;
+    const done = scheduleData.filter(w => completionStatus[w.week] && completionStatus[w.week][subjectKey]).length;
+    const ratio = total === 0 ? 0 : done / total;
+
     const bar = document.getElementById('subjectDetailBar');
     if (bar) {
-        bar.style.width = `${ratio*100}%`;
+        bar.style.width = `${ratio * 100}%`;
         bar.style.backgroundColor = subObj.color;
     }
     const txt = document.getElementById('subjectDetailText');
-    if (txt) txt.textContent = `${Math.round(ratio*100)}%`;
-    
+    if (txt) txt.textContent = `${Math.round(ratio * 100)}%`;
+
     // list of weeks that have this subject
     const list = document.getElementById('subjectWeekList');
-    list.innerHTML = scheduleData.map((wk,i)=>{
+    list.innerHTML = scheduleData.map((wk, i) => {
         if (!wk[subjectKey] || !wk[subjectKey].trim()) return '';
         const checked = completionStatus[wk.week] ? completionStatus[wk.week][subjectKey] : false;
         return `
@@ -389,7 +400,7 @@ function renderSubjectDetail(subjectKey) {
                     <span class="week-date">${wk.date}</span>
                     <div class="subject-card-content">${escapeHtml(wk[subjectKey]).replace(/\n/g, '<br>')}</div>
                 </div>
-                <div class="subject-checkbox ${checked?'checked':''}" onclick="toggleSubject('${wk.week}','${subjectKey}')"></div>
+                <div class="subject-checkbox ${checked ? 'checked' : ''}" onclick="toggleSubject('${wk.week}','${subjectKey}')"></div>
             </div>
         `;
     }).join('');
@@ -406,9 +417,9 @@ function updateOverallProgress() {
             }
         });
     }
-    const ratio = total===0?0:done/total;
-    const percentage = Math.round(ratio*100);
-    
+    const ratio = total === 0 ? 0 : done / total;
+    const percentage = Math.round(ratio * 100);
+
     const txt = document.getElementById('overallProgressText');
     if (txt) {
         const digits = {
@@ -430,7 +441,7 @@ function renderExamsTab() {
     // Show/hide sub-tab content
     document.getElementById('examsAll').classList.toggle('active', activeExamsSubTab === 'all');
     document.getElementById('examsSubjects').classList.toggle('active', activeExamsSubTab === 'subjects');
-    
+
     // Update sub-tab button styles inside examsSubTabNav
     const subTabNav = document.getElementById('examsSubTabNav');
     if (subTabNav) {
@@ -468,13 +479,13 @@ function renderAllExamsList() {
         const scoresHtml = subjectsData.map(sub => {
             const scoreStr = exam.scores[sub.id];
             if (!scoreStr || scoreStr.trim() === '') return '';
-            
+
             const score = parseFloat(scoreStr);
             const target = EXAM_TARGETS[sub.id];
-            
+
             let statusClass = '';
             let targetHtml = '';
-            
+
             if (target !== undefined) {
                 if (score >= target) {
                     statusClass = 'score-success';
@@ -496,7 +507,10 @@ function renderAllExamsList() {
         return `
             <div class="exam-card" onclick="openExamSheet('${exam.id}')">
                 <div class="exam-card-header">
-                    <span class="exam-card-title">${escapeHtml(exam.name)}</span>
+                    <span class="exam-card-title" style="display: inline-flex; align-items: center; gap: 6px;">
+                        ${exam.year ? `<span style="font-size:0.75rem; background:rgba(142,177,201,0.15); color:var(--primary-dark); padding:2px 8px; border-radius:8px; font-weight:700;">${escapeHtml(exam.year)}</span>` : ''}
+                        <span>${escapeHtml(exam.name)}</span>
+                    </span>
                     <span class="exam-card-date">${exam.date}</span>
                 </div>
                 <div class="exam-scores-grid">
@@ -524,10 +538,10 @@ function renderExamsSubjectsView() {
 
     listContainer.innerHTML = subjectsData.map(sub => {
         const key = sub.id;
-        
+
         let totalScore = 0;
         let examCount = 0;
-        
+
         examsData.forEach(exam => {
             const scoreStr = exam.scores[key];
             if (scoreStr && scoreStr.trim() !== '') {
@@ -541,7 +555,7 @@ function renderExamsSubjectsView() {
 
         const avgScore = examCount > 0 ? (totalScore / examCount).toFixed(1) : null;
         const target = EXAM_TARGETS[key];
-        
+
         let avgHtml = '';
         if (examCount > 0) {
             let statusStyle = '';
@@ -600,10 +614,10 @@ function renderExamsSubjectDetail(subjectKey) {
 
     detailScoresContainer.innerHTML = filteredExams.map(exam => {
         const score = parseFloat(exam.scores[subjectKey]);
-        
+
         let statusClass = '';
         let targetHtml = '';
-        
+
         if (target !== undefined) {
             if (score >= target) {
                 statusClass = 'score-success';
@@ -616,7 +630,10 @@ function renderExamsSubjectDetail(subjectKey) {
         return `
             <div class="exam-score-item ${statusClass}" onclick="openExamSheet('${exam.id}')" style="border-left: 4px solid ${subObj.color}; padding: 12px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.75); border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; transition: var(--transition);">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <div style="font-weight: 700; color: var(--text); font-size: 1rem;">${escapeHtml(exam.name)}</div>
+                    <div style="font-weight: 700; color: var(--text); font-size: 1rem; display: flex; align-items: center; gap: 6px;">
+                        ${exam.year ? `<span style="font-size:0.75rem; background:rgba(142,177,201,0.15); color:var(--primary-dark); padding:2px 8px; border-radius:8px; font-weight:700;">${escapeHtml(exam.year)}</span>` : ''}
+                        <span>${escapeHtml(exam.name)}</span>
+                    </div>
                     <div style="font-size: 0.8rem; color: var(--text-secondary);">${exam.date}</div>
                 </div>
                 <div style="text-align: right; display: flex; flex-direction: column; gap: 2px;">
@@ -636,26 +653,29 @@ function openExamSheet(id = null) {
     const dateEl = document.getElementById('examDate');
     const nameEl = document.getElementById('examName');
     const actionsEl = document.getElementById('examSheetActions');
-    
+
     // Reset temp inputs
     const scoreInput = document.getElementById('examSubjectScore');
     if (scoreInput) scoreInput.value = '';
-    
+
+    const yearEl = document.getElementById('examYear');
     if (id) {
         const exam = examsData.find(e => e.id === id);
         if (!exam) return;
         titleEl.textContent = '編輯測驗成績';
         dateEl.value = exam.date || '';
         nameEl.value = exam.name || '';
+        if (yearEl) yearEl.value = exam.year || '';
         actionsEl.style.display = 'block';
-        
+
         tempExamScores = { ...exam.scores };
     } else {
         titleEl.textContent = '新增測驗成績';
         dateEl.value = new Date().toISOString().slice(0, 10);
         nameEl.value = '';
+        if (yearEl) yearEl.value = '';
         actionsEl.style.display = 'none';
-        
+
         tempExamScores = {};
     }
 
@@ -667,9 +687,9 @@ function openExamSheet(id = null) {
 function renderExamSubjectSelect() {
     const selectEl = document.getElementById('examSubjectSelect');
     if (!selectEl) return;
-    
+
     const availableSubjects = subjectsData.filter(sub => tempExamScores[sub.id] === undefined);
-    
+
     if (availableSubjects.length === 0) {
         selectEl.innerHTML = '<option value="">(無可用科目)</option>';
     } else {
@@ -682,13 +702,13 @@ function renderExamSubjectSelect() {
 function renderTempScoresList() {
     const container = document.getElementById('addedScoresList');
     if (!container) return;
-    
+
     const keys = Object.keys(tempExamScores);
     if (keys.length === 0) {
         container.innerHTML = '<div style="color:var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 12px;">尚無填寫科目成績</div>';
         return;
     }
-    
+
     container.innerHTML = keys.map(subId => {
         const sub = subjectsData.find(s => s.id === subId) || { name: '未知科目', color: '#ccc' };
         const score = tempExamScores[subId];
@@ -708,10 +728,10 @@ function addSubjectScoreToTemp() {
     const selectEl = document.getElementById('examSubjectSelect');
     const scoreEl = document.getElementById('examSubjectScore');
     if (!selectEl || !scoreEl) return;
-    
+
     const subId = selectEl.value;
     const scoreVal = scoreEl.value.trim();
-    
+
     if (!subId) {
         showToast('請先選擇科目');
         return;
@@ -720,16 +740,16 @@ function addSubjectScoreToTemp() {
         showToast('請輸入分數');
         return;
     }
-    
+
     const floatScore = parseFloat(scoreVal);
     if (isNaN(floatScore) || floatScore < 0 || floatScore > 100) {
         showToast('分數格式錯誤 (0 ~ 100)');
         return;
     }
-    
+
     const finalScore = parseFloat(floatScore.toFixed(1));
     tempExamScores[subId] = String(finalScore);
-    
+
     scoreEl.value = '';
     renderExamSubjectSelect();
     renderTempScoresList();
@@ -758,7 +778,9 @@ function closeExamSheet() {
 function saveExam() {
     const date = document.getElementById('examDate').value;
     const name = document.getElementById('examName').value.trim() || '未命名測驗';
-    
+    const yearEl = document.getElementById('examYear');
+    const year = yearEl ? yearEl.value : '';
+
     const finalScores = {};
     for (const subId in tempExamScores) {
         const val = tempExamScores[subId].trim();
@@ -771,6 +793,7 @@ function saveExam() {
         const exam = examsData.find(e => e.id === editingExamId);
         if (exam) {
             exam.date = date;
+            exam.year = year;
             exam.name = name;
             exam.scores = finalScores;
             showToast('已更新成績');
@@ -779,6 +802,7 @@ function saveExam() {
         const newExam = {
             id: 'exam_' + Date.now(),
             date: date,
+            year: year,
             name: name,
             scores: finalScores
         };
@@ -794,7 +818,7 @@ function saveExam() {
 function deleteExam() {
     if (!editingExamId) return;
     if (!confirm('確定要刪除這筆成績紀錄嗎？')) return;
-    
+
     examsData = examsData.filter(e => e.id !== editingExamId);
     saveState();
     if (activeTab === 'exams') renderExamsTab();
@@ -840,7 +864,7 @@ function saveEditFromSheet() {
     if (!row) return;
 
     row.date = document.getElementById('editDate').value;
-    
+
     // Dynamically collect values for all subjects
     subjectsData.forEach(sub => {
         const el = document.getElementById(`edit_sub_${sub.id}`);
@@ -859,10 +883,10 @@ function deleteCurrentWeek() {
     if (editingRowIndex < 0) return;
     if (!confirm('確定要刪除這一週的排程嗎？')) return;
     const wk = scheduleData[editingRowIndex].week;
-    scheduleData.splice(editingRowIndex,1);
+    scheduleData.splice(editingRowIndex, 1);
     delete completionStatus[wk];
     // re‑index currentWeekIdx if needed
-    if (currentWeekIdx >= scheduleData.length) currentWeekIdx = scheduleData.length-1;
+    if (currentWeekIdx >= scheduleData.length) currentWeekIdx = scheduleData.length - 1;
     saveState();
     renderAll();
     closeBottomSheet();
@@ -872,24 +896,24 @@ function deleteCurrentWeek() {
 // ------------------------------------------------------------
 // Adding / Resetting / Import‑Export
 function openAddWeek() {
-    const last = scheduleData[scheduleData.length-1];
-    const lastNum = last ? parseInt(last.week.replace('W','')) : 0;
-    const nextWeek = 'W' + String(lastNum+1).padStart(2,'0');
-    
+    const last = scheduleData[scheduleData.length - 1];
+    const lastNum = last ? parseInt(last.week.replace('W', '')) : 0;
+    const nextWeek = 'W' + String(lastNum + 1).padStart(2, '0');
+
     // Create week item dynamically with empty fields for all subjectsData
     const newWeekItem = { week: nextWeek, date: '' };
     subjectsData.forEach(sub => {
         newWeekItem[sub.id] = '';
     });
-    
+
     scheduleData.push(newWeekItem);
-    
+
     // Init completion for the new week dynamically
     completionStatus[nextWeek] = {};
     subjectsData.forEach(sub => {
         completionStatus[nextWeek][sub.id] = false;
     });
-    
+
     saveState();
     renderAll();
     showToast(`已新增 ${nextWeek}`);
@@ -902,7 +926,7 @@ function confirmReset() {
         localStorage.clear();
         loadState();
         currentWeekIdx = getCurrentWeekIndex();
-        if (currentWeekIdx===-1) currentWeekIdx = 0;
+        if (currentWeekIdx === -1) currentWeekIdx = 0;
         renderAll();
         showToast('資料已重置');
     }
@@ -910,9 +934,9 @@ function confirmReset() {
 
 function exportData() {
     const data = { subjectsData, scheduleData, completionStatus, examsData };
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download=`讀書規劃備份_${new Date().toISOString().slice(0,10)}.json`; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = `讀書規劃備份_${new Date().toISOString().slice(0, 10)}.json`; a.click();
     showToast('備份已產生');
 }
 
@@ -931,7 +955,7 @@ function handleImport(e) {
             if (data.scheduleData) scheduleData = data.scheduleData;
             if (data.completionStatus) completionStatus = data.completionStatus;
             if (data.examsData) examsData = data.examsData;
-            
+
             // Harmonize dynamic structures in case imported data has mismatches
             for (const wk of scheduleData) {
                 if (!completionStatus[wk.week]) {
@@ -947,7 +971,7 @@ function handleImport(e) {
             saveState();
             renderAll();
             showToast('匯入成功');
-        } catch(err) {
+        } catch (err) {
             console.error(err);
             showToast('匯入失敗，格式錯誤');
         }
@@ -962,16 +986,16 @@ function handleImport(e) {
 function switchTab(tabId) {
     activeTab = tabId;
     // header title
-    const titles={home:'總覽',schedule:'科目',exams:'成績',settings:'設定'};
+    const titles = { home: '總覽', schedule: '科目', exams: '成績', settings: '設定' };
     document.getElementById('pageTitle').textContent = titles[tabId];
     // hide all tab pages, then show the selected one
-    document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
     document.getElementById(`tab-${tabId}`).classList.add('active');
     // also ensure full-schedule subpage is hidden when switching away
     const homeFullEl = document.getElementById('tab-home-full');
     if (homeFullEl) homeFullEl.classList.remove('active');
     // activate tab button style
-    document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
+    document.querySelectorAll('.tab-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
     // when leaving subject detail, reset activeSubject
     if (tabId !== 'schedule') activeSubject = null;
     if (tabId !== 'exams') activeExamsSubject = null;
@@ -991,8 +1015,8 @@ function closeSubjectSheet() {
 }
 
 const PALETTE = [
-    '#e8c5be', '#e3cbb3', '#c6d4c1', '#c4d1df', '#e3c4d1',
-    '#d8a7a0', '#b5cba5', '#c99c93', '#e0a39a', '#9e8d87'
+    '#bcd0df', '#ebdcd0', '#c3d6cb', '#e0cad3', '#8fb2cf',
+    '#d9cfc1', '#a2bdbe', '#7b9ebc', '#d4a39e', '#aebcc8'
 ];
 
 function addNewSubject() {
@@ -1026,40 +1050,40 @@ function addNewSubject() {
 
 // ------------------------------------------------------------
 // Utility helpers
-function getCurrentWeekIndex(){
+function getCurrentWeekIndex() {
     const now = new Date();
     const year = now.getFullYear();
-    for(let i=0;i<scheduleData.length;i++){
+    for (let i = 0; i < scheduleData.length; i++) {
         if (!scheduleData[i] || !scheduleData[i].date) continue;
         const m = scheduleData[i].date.match(/(\d{2})\/(\d{2})～(\d{2})\/(\d{2})/);
-        if(!m) continue;
-        const start = new Date(year, parseInt(m[1])-1, parseInt(m[2]));
-        const end = new Date(year, parseInt(m[3])-1, parseInt(m[4]),23,59,59);
-        if(now>=start && now<=end) return i;
+        if (!m) continue;
+        const start = new Date(year, parseInt(m[1]) - 1, parseInt(m[2]));
+        const end = new Date(year, parseInt(m[3]) - 1, parseInt(m[4]), 23, 59, 59);
+        if (now >= start && now <= end) return i;
     }
     return -1;
 }
 
-function escapeHtml(str){
-    if(!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function debounce(fn, wait){
+function debounce(fn, wait) {
     let t;
-    return function(){
-        const args = arguments, ctx=this;
+    return function () {
+        const args = arguments, ctx = this;
         clearTimeout(t);
-        t = setTimeout(()=>fn.apply(ctx,args), wait);
+        t = setTimeout(() => fn.apply(ctx, args), wait);
     };
 }
 
-function showToast(msg){
-    const el=document.getElementById('toast');
+function showToast(msg) {
+    const el = document.getElementById('toast');
     if (el) {
-        el.textContent=msg;
+        el.textContent = msg;
         el.classList.add('show');
-        setTimeout(()=>el.classList.remove('show'),2500);
+        setTimeout(() => el.classList.remove('show'), 2500);
     }
 }
 

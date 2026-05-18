@@ -1,26 +1,26 @@
 /* ==== Design Tokens ==== */
 :root {
-    --bg-app: #fdf9f1;
-    --bg-card: rgba(255, 255, 255, 0.7);
-    --primary: #e8c5be;
-    --primary-light: #f9ebe8;
-    --primary-dark: #c99c93;
-    --accent: #d8a7a0;
-    --text: #5c4a42;
-    --text-secondary: #9e8d87;
-    --border: #f0e6df;
-    --success: #b5cba5;
-    --danger: #e0a39a;
+    --bg-app: #f5f4f0;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --primary: #8eb1c9;
+    --primary-light: #e8eff4;
+    --primary-dark: #4f7996;
+    --accent: #c9bbae;
+    --text: #2c3d4f;
+    --text-secondary: #6d8294;
+    --border: #e2e8ed;
+    --success: #a2bdbe;
+    --danger: #d4a39e;
     --radius: 20px;
-    --shadow: 0 8px 32px rgba(138, 115, 110, 0.08);
+    --shadow: 0 8px 32px rgba(79, 121, 150, 0.06);
     --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --tab-height: 70px;
     --header-height: 65px;
     /* Subject Colors */
-    --finance: #e3cbb3;
-    --tax: #c6d4c1;
-    --civics: #c4d1df;
-    --chinese: #e3c4d1;
+    --finance: #ebdcd0;
+    --tax: #c3d6cb;
+    --civics: #bcd0df;
+    --chinese: #e0cad3;
 }
 
 /* ==== Reset ==== */
@@ -84,7 +84,7 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 .sub-tab-btn.active {
     background:var(--primary);
     color:white;
-    box-shadow:0 4px 12px rgba(232,197,190,0.4);
+    box-shadow:0 4px 12px rgba(142, 177, 201, 0.4);
 }
 .sub-tab-content {
     display:none;
@@ -109,7 +109,7 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 
 /* ==== Beautiful Overall Progress Card ==== */
 .overall-progress-card {
-    background: linear-gradient(135deg, rgba(232, 197, 190, 0.85) 0%, rgba(201, 156, 147, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(142, 177, 201, 0.85) 0%, rgba(79, 121, 150, 0.95) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.4);
@@ -118,7 +118,7 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 12px 30px rgba(201, 156, 147, 0.25);
+    box-shadow: 0 12px 30px rgba(79, 121, 150, 0.2);
     color: white;
     margin-top: 10px;
     margin-bottom: 24px;
@@ -242,7 +242,7 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 .input-group { margin-bottom:16px; }
 .input-group label { display:block; font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700; }
 .input-group input, .input-group textarea { width:100%; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); border-radius:16px; padding:14px; font-family:inherit; font-size:1rem; color:var(--text); transition:var(--transition); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-.input-group input:focus, .input-group textarea:focus { background:white; border-color:var(--primary); outline:none; box-shadow: 0 0 0 3px rgba(232,197,190,0.3); }
+.input-group input:focus, .input-group textarea:focus { background:white; border-color:var(--primary); outline:none; box-shadow: 0 0 0 3px rgba(142,177,201,0.3); }
 .btn-delete { width:100%; background:none; border:1px solid var(--danger); color:var(--danger); padding:12px; border-radius:12px; font-weight:600; cursor:pointer; }
 
 /* ==== Toast ==== */
@@ -280,7 +280,7 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
     line-height:1.4;
 }
 .full-schedule-table tbody tr:nth-child(even) {
-    background:#faf7f4;
+    background:#edece9;
 }
 .full-schedule-table tbody tr:hover {
     background:var(--primary-light);
@@ -343,10 +343,10 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
     transition: var(--transition);
 }
 .exam-score-item.score-success {
-    background: rgba(181, 203, 165, 0.2);
+    background: rgba(79, 121, 150, 0.14);
 }
 .exam-score-item.score-danger {
-    background: rgba(224, 163, 154, 0.15);
+    background: rgba(142, 177, 201, 0.08);
 }
 .exam-score-sub {
     font-size: 0.85rem;
@@ -359,10 +359,10 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
     color: var(--text);
 }
 .exam-score-item.score-success .exam-score-val {
-    color: #5c7a4d;
+    color: var(--primary-dark);
 }
 .exam-score-item.score-danger .exam-score-val {
-    color: #a8564b;
+    color: var(--text-secondary);
 }
 .exam-score-target {
     font-size: 0.75rem;
@@ -370,15 +370,15 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
     margin-top: 2px;
 }
 .exam-score-item.score-success .exam-score-target {
-    color: #5c7a4d;
+    color: var(--primary-dark);
 }
 .exam-score-item.score-danger .exam-score-target {
-    color: #a8564b;
+    color: var(--text-secondary);
 }
 
 #addExamFab:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(201,156,147,0.6);
+    box-shadow: 0 6px 20px rgba(79, 121, 150, 0.4);
 }
 #addExamFab:active {
     transform: scale(0.92);

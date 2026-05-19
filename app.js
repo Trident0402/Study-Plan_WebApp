@@ -6,22 +6,22 @@ const DEFAULT_SCHEDULE = [
     { week: "W02", date: "05/11～05/17", finance: "Ch6、Ch7", tax: "", civics: "", chinese: "第二章（壹）" },
     { week: "W03", date: "05/18～05/24", finance: "Ch1", tax: "Chapter 1 租稅基本概念、\nChapter 2 租稅法意義與原則、附錄）", civics: "壹：1－2", chinese: "114初考、115初考" },
     { week: "W04", date: "05/25～05/31", finance: "Ch3", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：3－4", chinese: "113初考、112初考" },
-    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：5－6", chinese: "112地方特考五等" },
-    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（附錄）", civics: "壹：7－8", chinese: "114司法特考五等" },
-    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 4 營利事業所得稅（主文）", civics: "壹：9 貳：1", chinese: "113司法特考五等）" },
-    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "貳：2－3", chinese: "112司法特考五等）" },
+    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：5－6", chinese: "114司法特考五等" },
+    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（附錄）", civics: "壹：7－8", chinese: "113司法特考五等" },
+    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 4 營利事業所得稅（主文）", civics: "壹：9 貳：1", chinese: "112司法特考五等" },
+    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "貳：2－3", chinese: "112地方特考五等" },
     { week: "W09", date: "06/29～07/05", finance: "Ch11", tax: "Chapter 6 所得稅的稽徵", civics: "貳：4－5", chinese: "112鐵路特考佐級" },
-    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "貳：6 參：1", chinese: "113身心障礙人員特考五等" },
-    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：2－3", chinese: "113 原住民族特考五等" },
-    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 10 土地稅", civics: "參：4－5", chinese: "114 原住民族特考五等" },
-    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "參：6－7", chinese: "）" },
-    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "參：8－9", chinese: "" },
-    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "參：10－11", chinese: "" },
-    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：1－2", chinese: "" },
-    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "" },
-    { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 18 信託稅制", civics: "肆：5－6", chinese: "第六章" },
-    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "）" },
-    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "" }
+    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "貳：6 參：1", chinese: "114身心障礙人員特考五等" },
+    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：2－3", chinese: "113身心障礙人員特考五等" },
+    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 10 土地稅", civics: "參：4－5", chinese: "112身心障礙人員特考五等" },
+    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "參：6－7", chinese: "114 原住民族特考五等" },
+    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "參：8－9", chinese: "113 原住民族特考五等" },
+    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "參：10－11", chinese: "112 原住民族特考五等" },
+    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：1－2", chinese: "111 初考" },
+    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "111身心障礙人員特考五等" },
+    { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 18 信託稅制", civics: "肆：5－6", chinese: "111鐵路特考佐級" },
+    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "111地方特考五等" },
+    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "111司法特考五等" }
 ];
 
 // ------------------------------------------------------------
@@ -919,6 +919,20 @@ function openAddWeek() {
     showToast(`已新增 ${nextWeek}`);
     // automatically switch to schedule tab so user can edit
     switchTab('schedule');
+}
+
+function confirmResetSchedule() {
+    if (confirm('確定要重置「排程與科目」回預設值嗎？\n您的所有「測驗成績」將會被完整保留。')) {
+        localStorage.removeItem('studyPlan_schedule');
+        localStorage.removeItem('studyPlan_subjects');
+        localStorage.removeItem('studyPlan_completion');
+        // Do not remove 'studyPlan_exams'
+        loadState();
+        currentWeekIdx = getCurrentWeekIndex();
+        if (currentWeekIdx === -1) currentWeekIdx = 0;
+        renderAll();
+        showToast('排程與科目已重置');
+    }
 }
 
 function confirmReset() {

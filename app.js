@@ -4,24 +4,27 @@
 const DEFAULT_SCHEDULE = [
     { week: "W01", date: "05/04～05/10", finance: "Ch2、Ch5", tax: "", civics: "", chinese: "第一章" },
     { week: "W02", date: "05/11～05/17", finance: "Ch6、Ch7", tax: "", civics: "", chinese: "第二章（壹）" },
-    { week: "W03", date: "05/18～05/24", finance: "Ch1", tax: "Chapter 1 租稅基本概念、\nChapter 2 租稅法意義與原則、附錄）", civics: "壹：1－2", chinese: "114初考、115初考" },
-    { week: "W04", date: "05/25～05/31", finance: "Ch3", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：3－4", chinese: "113初考、112初考" },
-    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（主文）", civics: "壹：5－6", chinese: "114司法特考五等" },
-    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（附錄）", civics: "壹：7－8", chinese: "113司法特考五等" },
-    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 4 營利事業所得稅（主文）", civics: "壹：9 貳：1", chinese: "112司法特考五等" },
-    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "貳：2－3", chinese: "112地方特考五等" },
-    { week: "W09", date: "06/29～07/05", finance: "Ch11", tax: "Chapter 6 所得稅的稽徵", civics: "貳：4－5", chinese: "112鐵路特考佐級" },
-    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "貳：6 參：1", chinese: "115身心障礙特考五等" },
-    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：2－3", chinese: "114身心障礙特考五等" },
-    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 10 土地稅", civics: "參：4－5", chinese: "113身心障礙特考五等" },
-    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "參：6－7", chinese: "112身心障礙特考五等" },
-    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "參：8－9", chinese: "114原住民族五等" },
-    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "參：10－11", chinese: "113原住民族五等" },
-    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：1－2", chinese: "112原住民族五等" },
-    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 各稅及其他各稅", civics: "肆：3－4", chinese: "111 初考(AI改編)" },
-    { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 18 信託稅制", civics: "肆: 5－6", chinese: "111地方特考五等(AI改編)" }, // 為了跟下面保持一致，我們檢查一下 Civics
-    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "肆：7－8", chinese: "111司法特考五等(AI改編)" },
-    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "肆：8－9", chinese: "111身心障礙特考五等(AI改編)" }
+    { week: "W03", date: "05/18～05/24", finance: "ch1", tax: "Chapter 1 租稅基本概念、\nChapter 2 租稅法意義與原則、附", civics: "壹：1－2", chinese: "114初考、115初考" },
+    { week: "W04", date: "05/25～05/31", finance: "ch3", tax: "Chapter 3 綜合所得稅（上1~22）", civics: "壹：3－4", chinese: "113初考、112初考" },
+    { week: "W05", date: "06/01～06/07", finance: "Ch4", tax: "Chapter 3 綜合所得稅（上23~50）", civics: "壹：5－6", chinese: "114司法特考五等" },
+    { week: "W06", date: "06/08～06/14", finance: "Ch8", tax: "Chapter 3 綜合所得稅（中1~26）", civics: "壹：7－8", chinese: "113司法特考五等" },
+    { week: "W07", date: "06/15～06/21", finance: "Ch9", tax: "Chapter 3 綜合所得稅（中27~46）", civics: "壹：9 貳：1", chinese: "112司法特考五等" },
+    { week: "W08", date: "06/22～06/28", finance: "Ch10", tax: "Chapter 3 綜合所得稅（下1~23）", civics: "貳：2－3", chinese: "112地方特考五等" },
+    { week: "W09", date: "06/29～07/05", finance: "Ch11", tax: "Chapter 3 綜合所得稅（下24~63）", civics: "貳：4－5", chinese: "112鐵路特考佐級" },
+    { week: "W10", date: "07/06～07/12", finance: "Ch12", tax: "Chapter 4 營利事業所得稅（主文）", civics: "貳：6 參：1", chinese: "115身心障礙特考五等" },
+    { week: "W11", date: "07/15～07/19", finance: "Ch13", tax: "Chapter 4 營所稅附錄、\nChapter 5 股利所得課稅新制", civics: "參：2－3", chinese: "114身心障礙特考五等" },
+    { week: "W12", date: "07/22～07/26", finance: "Ch14", tax: "Chapter 6 所得稅的稽徵", civics: "參：4－5", chinese: "113身心障礙特考五等" },
+    { week: "W13", date: "07/27～08/02", finance: "Ch15", tax: "Chapter 7 租稅減免、\nChapter 8 所得基本稅額及附錄", civics: "參：6－7", chinese: "112身心障礙特考五等" },
+    { week: "W14", date: "08/03～08/09", finance: "", tax: "Chapter 9 遺產及贈與稅（主文與附錄）", civics: "參：8－9", chinese: "114原住民族五等" },
+    { week: "W15", date: "08/10～08/16", finance: "", tax: "Chapter 10 土地稅", civics: "參：10－11", chinese: "113原住民族五等" },
+    { week: "W16", date: "08/17～08/23", finance: "", tax: "Chapter 11 房屋稅、\nChapter 12 契稅", civics: "肆：1－2", chinese: "112原住民族五等" },
+    { week: "W17", date: "08/24～08/30", finance: "", tax: "Chapter 13 營業稅（主文）", civics: "肆：3－4", chinese: "111 初考(AI改編)" },
+    { week: "W18", date: "08/31～09/06", finance: "", tax: "Chapter 13 營業稅（附錄）", civics: "肆：5－6", chinese: "111地方特考五等(AI改編)" },
+    { week: "W19", date: "09/07～09/13", finance: "", tax: "Chapter 14 關稅、\nChapter 15 貨物稅", civics: "肆：7－8", chinese: "111司法特考五等(AI改編)" },
+    { week: "W20", date: "09/14～09/20", finance: "", tax: "Chapter 16 菸酒稅、\nChapter 17 奢侈稅及其他各稅", civics: "肆：8－9", chinese: "111身心障礙特考五等(AI改編)" },
+    { week: "W21", date: "09/21～09/27", finance: "", tax: "Chapter 18 信託稅制", civics: "", chinese: "" },
+    { week: "W22", date: "09/28～10/04", finance: "", tax: "Chapter 19 稅捐稽徵法（主文）", civics: "", chinese: "" },
+    { week: "W23", date: "10/05～10/11", finance: "", tax: "Chapter 19 稅捐稽徵法（附錄）", civics: "", chinese: "" }
 ];
 
 // ------------------------------------------------------------
@@ -87,34 +90,26 @@ function loadState() {
         const savedSchedule = localStorage.getItem('studyPlan_schedule');
         scheduleData = savedSchedule ? JSON.parse(savedSchedule) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
 
-        // 升級或更新國文排程至最新版本 (115身心障礙特考等)
-        if (scheduleData && scheduleData.length >= 20) {
-            const needsUpdate = scheduleData.some(wk => 
-                (wk.week === "W10" && wk.chinese === "114身心障礙人員特考五等") ||
-                (wk.week === "W20" && wk.chinese === "111司法特考五等")
-            );
-            if (needsUpdate) {
-                const updateMap = {
-                    "W10": "115身心障礙特考五等",
-                    "W11": "114身心障礙特考五等",
-                    "W12": "113身心障礙特考五等",
-                    "W13": "112身心障礙特考五等",
-                    "W14": "114原住民族五等",
-                    "W15": "113原住民族五等",
-                    "W16": "112原住民族五等",
-                    "W17": "111 初考(AI改編)",
-                    "W18": "111地方特考五等(AI改編)",
-                    "W19": "111司法特考五等(AI改編)",
-                    "W20": "111身心障礙特考五等(AI改編)"
-                };
-                scheduleData.forEach(wk => {
-                    if (updateMap[wk.week]) {
-                        wk.chinese = updateMap[wk.week];
-                    }
-                });
-                // Delay saveState to avoid saving during early partial load, but we can do it safely here
-                localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
+        // 升級或更新排程至最新 23 週排程版本
+        if (scheduleData && scheduleData.length < 23) {
+            const updatedSchedule = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+            // 1. 更新現有週的內容（保留使用者的科目，但將科目進度更新為新版內容）
+            for (let i = 0; i < scheduleData.length; i++) {
+                const oldWk = scheduleData[i];
+                const newWk = updatedSchedule[i];
+                if (oldWk && newWk && oldWk.week === newWk.week) {
+                    subjectsData.forEach(sub => {
+                        oldWk[sub.id] = newWk[sub.id];
+                    });
+                    if (newWk.date) oldWk.date = newWk.date;
+                }
             }
+            // 2. 新增缺失的 21 ~ 23 週
+            for (let i = scheduleData.length; i < 23; i++) {
+                scheduleData.push(JSON.parse(JSON.stringify(updatedSchedule[i])));
+            }
+            // 保存至 localStorage
+            localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
         }
 
         const savedExams = localStorage.getItem('studyPlan_exams');
@@ -451,13 +446,34 @@ function updateOverallProgress() {
     const percentage = Math.round(ratio * 100);
 
     const txt = document.getElementById('overallProgressText');
+    const digits = {
+        '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
+        '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+    };
     if (txt) {
-        const digits = {
-            '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰',
-            '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
-        };
         const stylizedNum = String(percentage).split('').map(d => digits[d] || d).join('');
         txt.textContent = `⊹˙ 𐙚 ﹝ 𝑶𝒗𝒆𝒓𝒂𝒍𝒍 𝑷𝒓𝒐𝒈𝒓𝒆𝒔𝒔 ﹕ ${stylizedNum}٪ ﹞ ✦ *`;
+    }
+
+    // 計算到本週為止 (index 從 0 到 currentWeekIdx) 的計畫應完成總數
+    let targetTotal = 0;
+    for (let i = 0; i <= currentWeekIdx; i++) {
+        const wk = scheduleData[i];
+        if (wk) {
+            subjectsData.forEach(sub => {
+                if (wk[sub.id] && wk[sub.id].trim()) {
+                    targetTotal++;
+                }
+            });
+        }
+    }
+    const targetRatio = total === 0 ? 0 : targetTotal / total;
+    const targetPercentage = Math.round(targetRatio * 100);
+
+    const targetTxt = document.getElementById('overallTargetText');
+    if (targetTxt) {
+        const stylizedTargetNum = String(targetPercentage).split('').map(d => digits[d] || d).join('');
+        targetTxt.textContent = `✦ 這週至少要到達總目標的 ${stylizedTargetNum}٪ ✦`;
     }
 }
 

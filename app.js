@@ -1,5 +1,5 @@
 // 📱 讀書規劃 V3 – 完整 App Logic
-const APP_VERSION = 'v1.00.08';
+const APP_VERSION = 'v1.00.09';
 
 // ------------------------------------------------------------
 // Data (same schedule as before)

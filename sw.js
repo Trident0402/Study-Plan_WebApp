@@ -1,10 +1,10 @@
-const SERVICE_WORKER_VERSION = 'v1.00.08';
+const SERVICE_WORKER_VERSION = 'v1.00.09';
 const CACHE_NAME = `study-plan-${SERVICE_WORKER_VERSION}`;
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './style.css?v=v1.00.08',
-    './app.js?v=v1.00.08',
+    './style.css?v=v1.00.09',
+    './app.js?v=v1.00.09',
     './version.json',
     './manifest.json',
     './icon-192.png',

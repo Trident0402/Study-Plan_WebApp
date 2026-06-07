@@ -86,3 +86,7 @@
 ## User Review Required
 > [!IMPORTANT]
 > 以上計畫是否符合您的需求？若確認無誤，請回覆「確認執行」，我將立刻幫您修改 `app.js`、`sw.js`、`index.html` 以及 `version.json` 並推出版號 **v1.00.08**！
+
+### [v1.00.09] - 2026-06-07
+- **新增網頁版 Favicon 支援**
+- 在 `index.html` 加入 `<link rel="icon" type="image/png" href="icon-192.png">` 標籤，讓使用者在電腦版或普通手機瀏覽器開啟網頁時，分頁標籤上能正確顯示與 PWA App 一致的 ICON 圖示。

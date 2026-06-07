@@ -29,7 +29,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=v1.00.03">
 </head>
 
 <body>
@@ -156,10 +156,10 @@
                                 style="display: flex; align-items: center;"><img src="subjects-icon.png" alt="subjects"
                                     style="width: 20px; height: 20px; object-fit: contain;"></span><span
                                 class="item-text">新增科目管理</span><span class="item-arrow">›</span></button>
-                        <button class="settings-item danger" onclick="confirmResetSchedule()"><span class="item-icon"
+                        <button class="settings-item danger" onclick="forceAppRefresh()"><span class="item-icon"
                                 style="display: flex; align-items: center;"><img src="reset-icon.png" alt="reset"
                                     style="width: 20px; height: 20px; object-fit: contain;"></span><span
-                                class="item-text">重置排程與科目 (保留成績)</span><span class="item-arrow">›</span></button>
+                                class="item-text">強制更新頁面 (保留所有紀錄)</span><span class="item-arrow">›</span></button>
                         <button class="settings-item danger" onclick="confirmReset()"><span class="item-icon"
                                 style="display: flex; align-items: center;"><img src="reset-icon.png" alt="reset"
                                     style="width: 20px; height: 20px; object-fit: contain;"></span><span
@@ -177,6 +177,15 @@
                                 style="display: flex; align-items: center;"><img src="import-icon.png" alt="import"
                                     style="width: 20px; height: 20px; object-fit: contain;"></span><span
                                 class="item-text">匯入資料</span><span class="item-arrow">›</span></button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3 class="settings-title">關於</h3>
+                    <div class="settings-list">
+                        <div class="settings-item" style="cursor: default; justify-content: space-between;">
+                            <span class="item-text">App 版本</span>
+                            <span class="item-text" id="appVersionDisplay" style="color: var(--text-secondary); font-weight: 600;">v1.00.03</span>
+                        </div>
                     </div>
                 </div>
                 <div class="settings-info">
@@ -351,12 +360,15 @@
     </div>
     <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImport(event)">
     <div class="toast" id="toast"></div>
-    <script src="app.js"></script>
+    <script src="app.js?v=v1.00.03"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered'))
+                    .then(reg => {
+                        console.log('SW registered');
+                        reg.update();
+                    })
                     .catch(err => console.log('SW failed', err));
             });
         }

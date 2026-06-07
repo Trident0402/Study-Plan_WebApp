@@ -1,4 +1,6 @@
 // 📱 讀書規劃 V3 – 完整 App Logic
+const APP_VERSION = 'v1.00.03';
+
 // ------------------------------------------------------------
 // Data (same schedule as before)
 const DEFAULT_SCHEDULE = [
@@ -60,6 +62,8 @@ let editingExamId = null;
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     loadState();
+    const versionEl = document.getElementById('appVersionDisplay');
+    if (versionEl) versionEl.textContent = APP_VERSION;
     initEventListeners();
     initExamYearSelect(); // Populate year select dynamically from 116 to 80
     // set current week index based on today
@@ -335,14 +339,8 @@ function renderSubjectList() {
     // hide/show subject list vs detail
     const listContainer = document.getElementById('subjectListContainer');
     const detailContainer = document.getElementById('subjectDetailContainer');
-    if (activeSubject) {
-        listContainer.classList.add('hidden');
-        detailContainer.classList.remove('hidden');
-        renderSubjectDetail(activeSubject);
-        return;
-    }
-    listContainer.classList.remove('hidden');
-    detailContainer.classList.add('hidden');
+    
+    // 永遠在每次 render 時都更新上方的 listContainer DOM，這樣即便它顯示著，也會即時反應最新進度
     listContainer.innerHTML = subjectsData.map(sub => {
         const key = sub.id;
         const total = scheduleData.filter(w => w[key] && w[key].trim()).length;
@@ -358,6 +356,16 @@ function renderSubjectList() {
             </div>
         `;
     }).join('');
+
+    if (activeSubject) {
+        listContainer.classList.add('hidden');
+        detailContainer.classList.remove('hidden');
+        renderSubjectDetail(activeSubject);
+        return;
+    }
+    
+    listContainer.classList.remove('hidden');
+    detailContainer.classList.add('hidden');
 }
 
 // --------------------- Full Schedule Subpage ---------------------
@@ -925,6 +933,43 @@ function saveEditFromSheet() {
     showToast('已更新排程');
 }
 
+async function forceAppRefresh() {
+    try {
+        const res = await fetch("./version.json?check=" + Date.now(), { cache: "no-store" });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.version === APP_VERSION) {
+                showToast('目前已是最新版');
+                return;
+            } else {
+                if (!confirm(`發現新版本 (${data.version})！\n\n確定要更新頁面嗎？您的操作紀錄都會保留。`)) return;
+            }
+        } else {
+            if (!confirm('無法取得線上版本資訊。確定要強制更新頁面嗎？\n您的所有操作紀錄都會保留。')) return;
+        }
+    } catch (e) {
+        if (!confirm('網路異常或無法取得版本。確定要強制更新頁面嗎？\n您的所有操作紀錄都會保留。')) return;
+    }
+
+    const stamp = Date.now().toString();
+    if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+    }
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(r => r.unregister()));
+    }
+    
+    // 強制重新抓取關鍵檔案
+    const filesToPreload = ['./index.html', './version.json', './sw.js', './app.js', './style.css'];
+    await Promise.allSettled(filesToPreload.map(file => fetch(file, { cache: "reload" })));
+
+    const url = new URL(window.location.origin + window.location.pathname);
+    url.searchParams.set("forceUpdate", stamp);
+    window.location.replace(url.toString());
+}
+
 function deleteCurrentWeek() {
     if (editingRowIndex < 0) return;
     if (!confirm('確定要刪除這一週的排程嗎？')) return;
@@ -1045,6 +1090,12 @@ function handleImport(e) {
 // Tab Switching helper
 function switchTab(tabId) {
     activeTab = tabId;
+
+    if (tabId === 'home') {
+        currentWeekIdx = getCurrentWeekIndex();
+        if (currentWeekIdx === -1) currentWeekIdx = 0;
+    }
+
     // header title
     const titles = { home: '總覽', schedule: '科目', exams: '成績', settings: '設定' };
     document.getElementById('pageTitle').textContent = titles[tabId];
@@ -1152,6 +1203,7 @@ function showToast(msg) {
 window.toggleSubject = toggleSubject;
 window.openBottomSheet = openBottomSheet;
 window.openAddWeek = openAddWeek;
+window.forceAppRefresh = forceAppRefresh;
 window.confirmReset = confirmReset;
 window.exportData = exportData;
 window.importData = importData;

@@ -1,9 +1,11 @@
-const CACHE_NAME = 'study-plan-v1';
+const SERVICE_WORKER_VERSION = 'v1.00.03';
+const CACHE_NAME = `study-plan-${SERVICE_WORKER_VERSION}`;
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './style.css',
-    './app.js',
+    './style.css?v=v1.00.03',
+    './app.js?v=v1.00.03',
+    './version.json',
     './manifest.json',
     './icon-192.png',
     './icon-512.png'

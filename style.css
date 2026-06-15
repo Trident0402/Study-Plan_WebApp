@@ -285,18 +285,8 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 .full-schedule-table tbody tr:hover {
     background:var(--primary-light);
 }
-@keyframes weekPulse {
-    0% { background-color: rgba(142,177,201,0.15); }
-    50% { background-color: rgba(142,177,201,0.45); }
-    100% { background-color: rgba(142,177,201,0.15); }
-}
-@keyframes badgeBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
 .full-schedule-table tbody tr.current-week-row {
-    animation: weekPulse 2.5s infinite;
+    background-color: rgba(142,177,201,0.25);
 }
 .full-schedule-table tbody tr.current-week-row td {
     font-weight: 800;
@@ -310,19 +300,6 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 }
 .full-schedule-table tbody tr.current-week-row td:last-child {
     border-right: 2px solid var(--primary-dark);
-}
-.current-week-badge {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 0.75rem;
-    color: white;
-    background: var(--primary-dark);
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 12px rgba(79,121,150,0.5);
-    animation: badgeBounce 2.5s infinite;
 }
 .full-schedule-table tbody td.completed-cell {
     opacity: 0.35;

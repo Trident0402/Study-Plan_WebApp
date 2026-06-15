@@ -1,5 +1,5 @@
 // 📱 讀書規劃 V3 – 完整 App Logic
-const APP_VERSION = 'v1.00.14';
+const APP_VERSION = 'v1.00.15';
 
 // ------------------------------------------------------------
 // Data (same schedule as before)
@@ -371,10 +371,9 @@ function renderFullSchedule() {
 
         const isCurrentWeek = (i === currentWeekIdx);
         const rowClass = isCurrentWeek ? ' class="current-week-row"' : '';
-        const weekDisplay = isCurrentWeek ? `${w.week}<br><span class="current-week-badge">🎯 本週</span>` : w.week;
 
         html += `<tr${rowClass}>
-            <td>${weekDisplay}</td>
+            <td>${w.week}</td>
             <td>${w.date}</td>
             ${rowCells}
         </tr>`;

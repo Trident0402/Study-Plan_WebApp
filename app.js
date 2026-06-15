@@ -1,5 +1,5 @@
 // 📱 讀書規劃 V3 – 完整 App Logic
-const APP_VERSION = 'v1.00.11';
+const APP_VERSION = 'v1.00.12';
 
 // ------------------------------------------------------------
 // Data (same schedule as before)
@@ -362,14 +362,17 @@ function renderFullSchedule() {
     let headerCols = subjectsData.map(sub => `<th>${sub.name}</th>`).join('');
     let html = `<table class="full-schedule-table"><thead><tr><th>週次</th><th>日期</th>${headerCols}</tr></thead><tbody>`;
 
-    scheduleData.forEach(w => {
+    scheduleData.forEach((w, i) => {
         let rowCells = subjectsData.map(sub => {
             const isComp = completionStatus[w.week] && completionStatus[w.week][sub.id];
             const compClass = isComp ? ' class="completed-cell"' : '';
             return `<td${compClass}>${w[sub.id] || ''}</td>`;
         }).join('');
 
-        html += `<tr>
+        const isCurrentWeek = (i === currentWeekIdx);
+        const rowClass = isCurrentWeek ? ' class="current-week-row"' : '';
+
+        html += `<tr${rowClass}>
             <td>${w.week}</td>
             <td>${w.date}</td>
             ${rowCells}

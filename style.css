@@ -285,6 +285,14 @@ button, input, select, textarea, h1, h2, h3, h4, h5, h6 { font-family: inherit; 
 .full-schedule-table tbody tr:hover {
     background:var(--primary-light);
 }
+.full-schedule-table tbody tr.current-week-row {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary-dark);
+}
+.full-schedule-table tbody tr.current-week-row td {
+    font-weight: 700;
+    color: var(--primary-dark);
+}
 .full-schedule-table tbody td.completed-cell {
     opacity: 0.35;
     background-color: #f0f0f0;

@@ -1,5 +1,5 @@
 // 📱 讀書規劃 V3 – 完整 App Logic
-const APP_VERSION = 'v1.00.10';
+const APP_VERSION = 'v1.00.11';
 
 // ------------------------------------------------------------
 // Data (same schedule as before)
@@ -95,28 +95,6 @@ function loadState() {
 
         const savedSchedule = localStorage.getItem('studyPlan_schedule');
         scheduleData = savedSchedule ? JSON.parse(savedSchedule) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-
-        // 升級或更新排程至最新 23 週排程版本
-        if (scheduleData && scheduleData.length < 23) {
-            const updatedSchedule = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-            // 1. 更新現有週的內容（保留使用者的科目，但將科目進度更新為新版內容）
-            for (let i = 0; i < scheduleData.length; i++) {
-                const oldWk = scheduleData[i];
-                const newWk = updatedSchedule[i];
-                if (oldWk && newWk && oldWk.week === newWk.week) {
-                    subjectsData.forEach(sub => {
-                        oldWk[sub.id] = newWk[sub.id];
-                    });
-                    if (newWk.date) oldWk.date = newWk.date;
-                }
-            }
-            // 2. 新增缺失的 21 ~ 23 週
-            for (let i = scheduleData.length; i < 23; i++) {
-                scheduleData.push(JSON.parse(JSON.stringify(updatedSchedule[i])));
-            }
-            // 保存至 localStorage
-            localStorage.setItem('studyPlan_schedule', JSON.stringify(scheduleData));
-        }
 
         const savedExams = localStorage.getItem('studyPlan_exams');
         examsData = savedExams ? JSON.parse(savedExams) : [];
